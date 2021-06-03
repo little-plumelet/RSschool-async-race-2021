@@ -1,4 +1,10 @@
-import { IsmallPathes, Icar, IcarsQueryParams } from '../shared/interfaces';
+import {
+  IsmallPathes,
+  Icar,
+  IcarsQueryParams,
+  Iwinner,
+  IwinnersQueryParams
+} from '../shared/interfaces';
 
 export default class Communicator {
   basePath: string;
@@ -8,28 +14,31 @@ export default class Communicator {
     winners: string,
   };
 
-  countX: number;
+  countXCars: number;
+
+  countXWinners: number;
 
   constructor(basePath: string, smallPathes: IsmallPathes) {
     this.basePath = basePath;
     this.smallPathes = smallPathes;
-    this.countX = 0;
+    this.countXCars = 0;
+    this.countXWinners = 0;
   }
 
-  private generateQueryString = (queryParams: IcarsQueryParams[]): string => {
+  // methods for garage
+  private generateCarsQueryString = (queryParams: IcarsQueryParams[]): string => {
     if (queryParams.length) {
       return `?${queryParams.map((x) => `${x.key}=${x.value}`).join('&')}`;
     }
     return '';
   };
 
-  // methods for garage
   getCars = async (queryParams: IcarsQueryParams[]): Promise<Response> => {
-    const responce = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateQueryString(queryParams)}`);
+    const responce = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
     const carsList = await responce.json();
-    this.countX = Number(responce.headers.get('X-Total-Count'));
+    this.countXCars = Number(responce.headers.get('X-Total-Count'));
     console.log('carsList = ', carsList);
-    console.log('countX = ', this.countX);
+    console.log('countXCARS = ', this.countXCars);
     return carsList;
   };
 
@@ -68,9 +77,75 @@ export default class Communicator {
     const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
       method: 'DELETE',
     });
-    const car = await response.json();
-    return car;
+    const deletedCar = await response.json();
+    return deletedCar;
   };
 
   // methods for winners
+  private generateWinnersQueryString = (queryParams: IwinnersQueryParams[]): string => {
+    if (queryParams.length) {
+      return `?${queryParams.map((x) => {
+        let res = '';
+        if (x.limitOrPage) {
+          res = `${x.limitOrPage.key}=${x.limitOrPage.value}`;
+        }
+        if (x.sort) {
+          res += `${x.sort.key}=${x.sort.value}`;
+        }
+        if (x.sortOrder) {
+          res += `${x.sortOrder.key}=${x.sortOrder.value}`;
+        }
+        return res;
+      }).join('&')}`;
+    }
+    return '';
+  };
+
+  getWinners = async (queryParams: IwinnersQueryParams[]): Promise<Response> => {
+    const responce = await fetch(`${this.basePath}${this.smallPathes.winners}${this.generateWinnersQueryString(queryParams)}`);
+    const winnersList = await responce.json();
+    this.countXWinners = Number(responce.headers.get('X-Total-Count'));
+    console.log('winnersList = ', winnersList);
+    console.log('countXWINNERS = ', this.countXWinners);
+    return winnersList;
+  };
+
+  getWinner = async (id: number): Promise<Response> => {
+    const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`);
+    const winner = await response.json();
+    console.log('winner = ', winner);
+    return winner;
+  };
+
+  createWinner = async (winnerParam: Iwinner): Promise<Response> => {
+    const response = await fetch(`${this.basePath}${this.smallPathes.winners}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(winnerParam),
+    });
+    const winner = await response.json();
+    return winner;
+  };
+
+  updateWinner = async (id: number, winnerParam: Iwinner): Promise<Response> => {
+    const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(winnerParam),
+    });
+    const winner = await response.json();
+    return winner;
+  };
+
+  deleteWinner = async (id: number): Promise<Response> => {
+    const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
+      method: 'DELETE',
+    });
+    const deletedWinner = await response.json();
+    return deletedWinner;
+  };
 }
