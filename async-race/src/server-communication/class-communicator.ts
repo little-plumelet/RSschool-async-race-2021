@@ -3,7 +3,8 @@ import {
   Icar,
   IcarsQueryParams,
   Iwinner,
-  IwinnersQueryParams
+  IwinnersQueryParams,
+  IengineQueryParams,
 } from '../shared/interfaces';
 
 export default class Communicator {
@@ -37,6 +38,7 @@ export default class Communicator {
     const responce = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
     const carsList = await responce.json();
     this.countXCars = Number(responce.headers.get('X-Total-Count'));
+    console.log('request = ', `${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
     console.log('carsList = ', carsList);
     console.log('countXCARS = ', this.countXCars);
     return carsList;
@@ -147,5 +149,36 @@ export default class Communicator {
     });
     const deletedWinner = await response.json();
     return deletedWinner;
+  };
+
+  // methods for engine
+  private generateEngineQueryString = (queryParams: [IengineQueryParams]): string => {
+    if (queryParams.length) {
+      return `?${queryParams.map((x) => {
+        let res = '';
+        if (x.id) {
+          res = `id=${x.id}`;
+        }
+        if (x.status) {
+          res += `&status=${x.status}`;
+        }
+        return res;
+      })}`;
+    }
+    return '';
+  };
+
+  startORStopCarEngine = async (queryParams: [IengineQueryParams]): Promise<Response> => {
+    const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
+    const result = await response.json();
+    console.log('EngineResult = ', result);
+    return result;
+  };
+
+  switchEngineDrive = async (queryParams: [IengineQueryParams]): Promise<Response> => {
+    const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
+    const result = await response.json();
+    console.log('EngineDriveResult = ', result);
+    return result;
   };
 }

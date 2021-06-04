@@ -13,13 +13,18 @@ const main = async () => {
   const updatedCar = await communicator.updateCar(5, { name: 'REALCAR', color: '#777777' });
   // const newWinner = await communicator.createWinner({ id: 135, wins: 2, time: 28 });
   const winners = await communicator.getWinners([{ limitOrPage: { key: '_page', value: 1 } }, { limitOrPage: { key: '_limit', value: 3 } }]);
-  const winner = await communicator.getWinner(9);
+  const winner = await communicator.getWinner(1);
+  const engine = await communicator.startORStopCarEngine([{ id: 2, status: 'started' }]);
+  const engineDrive = await communicator.switchEngineDrive([{ id: 2, status: 'drive' }]);
   console.log('newCar = ', newCar);
   console.log('list = ', listCars);
   console.log('updated car = ', updatedCar);
   console.log('X!!!! = ', communicator.countXCars);
   // console.log('newWinner = ', newWinner);
+  console.log('w = ', winner);
   console.log('winners = ', winners);
+  console.log('engine = ', engine);
+  console.log('engineDrive = ', engineDrive);
 };
 
 main();

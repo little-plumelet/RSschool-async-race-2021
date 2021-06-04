@@ -13,6 +13,11 @@ interface IcarsQueryParams {
   value?: number,
 }
 
+interface IengineQueryParams {
+  id: number,
+  status: 'started' | 'stopped' | 'drive',
+}
+
 interface Iwinner {
   id: number,
   wins: number,
@@ -38,6 +43,7 @@ export {
   IsmallPathes,
   Icar,
   IcarsQueryParams,
+  IengineQueryParams,
   Iwinner,
   IwinnersQueryParams,
 };
