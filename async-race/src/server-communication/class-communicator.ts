@@ -1,3 +1,5 @@
+import { SUCSESS, SUCSESS201 } from '../shared/constants';
+import { errorHandler, printErrorMessage } from './class-communicator-utils';
 import {
   IsmallPathes,
   Icar,
@@ -35,51 +37,74 @@ export default class Communicator {
   };
 
   getCars = async (queryParams: IcarsQueryParams[]): Promise<Response> => {
-    const responce = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
-    const carsList = await responce.json();
-    this.countXCars = Number(responce.headers.get('X-Total-Count'));
-    console.log('request = ', `${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
-    console.log('carsList = ', carsList);
-    console.log('countXCARS = ', this.countXCars);
+    let carsList;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
+      errorHandler(response, SUCSESS);
+      carsList = await response.json();
+      this.countXCars = Number(response.headers.get('X-Total-Count'));
+      console.log('request = ', `${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
+      console.log('carsList = ', carsList);
+      console.log('countXCARS = ', this.countXCars);
+    } catch (error) { printErrorMessage(error, 'get cars'); }
     return carsList;
   };
 
   getCar = async (id: number): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`);
-    const car = await response.json();
-    console.log('car = ', car);
+    let car;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`);
+      errorHandler(response, SUCSESS);
+      car = await response.json();
+      // Парсим данные, если убедились, что до этого в status было 200, например
+      console.log('!!!car = ', car);
+    } catch (error) { printErrorMessage(error, 'get car'); }
     return car;
   };
 
   createCar = async (carParam: Icar): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.garage}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(carParam),
-    });
-    const car = await response.json();
-    return car;
+    let createdCar;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.garage}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(carParam),
+      });
+      errorHandler(response, SUCSESS201);
+      createdCar = await response.json();
+    } catch (error) { printErrorMessage(error, 'create car'); }
+    return createdCar;
   };
 
   updateCar = async (id: number, carParam: Icar): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(carParam),
-    });
-    const car = await response.json();
-    return car;
+    let updatedCar;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(carParam),
+      });
+      errorHandler(response, SUCSESS);
+      updatedCar = await response.json();
+    } catch (error) { printErrorMessage(error, 'update car'); }
+    return updatedCar;
   };
 
   deleteCar = async (id: number): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
-      method: 'DELETE',
-    });
-    const deletedCar = await response.json();
+    let deletedCar;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
+        method: 'DELETE',
+      });
+      errorHandler(response, SUCSESS);
+      deletedCar = await response.json();
+    } catch (error) {
+      printErrorMessage(error, 'delete car');
+    }
     return deletedCar;
   };
 
@@ -88,15 +113,9 @@ export default class Communicator {
     if (queryParams.length) {
       return `?${queryParams.map((x) => {
         let res = '';
-        if (x.limitOrPage) {
-          res = `${x.limitOrPage.key}=${x.limitOrPage.value}`;
-        }
-        if (x.sort) {
-          res += `${x.sort.key}=${x.sort.value}`;
-        }
-        if (x.sortOrder) {
-          res += `${x.sortOrder.key}=${x.sortOrder.value}`;
-        }
+        if (x.limitOrPage) res = `${x.limitOrPage.key}=${x.limitOrPage.value}`;
+        if (x.sort) res += `${x.sort.key}=${x.sort.value}`;
+        if (x.sortOrder) res += `${x.sortOrder.key}=${x.sortOrder.value}`;
         return res;
       }).join('&')}`;
     }
@@ -104,50 +123,72 @@ export default class Communicator {
   };
 
   getWinners = async (queryParams: IwinnersQueryParams[]): Promise<Response> => {
-    const responce = await fetch(`${this.basePath}${this.smallPathes.winners}${this.generateWinnersQueryString(queryParams)}`);
-    const winnersList = await responce.json();
-    this.countXWinners = Number(responce.headers.get('X-Total-Count'));
-    console.log('winnersList = ', winnersList);
-    console.log('countXWINNERS = ', this.countXWinners);
+    let winnersList;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.winners}${this.generateWinnersQueryString(queryParams)}`);
+      errorHandler(response, SUCSESS);
+      winnersList = await response.json();
+      this.countXWinners = Number(response.headers.get('X-Total-Count'));
+      console.log('winnersList = ', winnersList);
+      console.log('countXWINNERS = ', this.countXWinners);
+    } catch (error) { printErrorMessage(error, 'get winners'); }
     return winnersList;
   };
 
   getWinner = async (id: number): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`);
-    const winner = await response.json();
-    console.log('winner = ', winner);
+    let winner;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`);
+      errorHandler(response, SUCSESS);
+      winner = await response.json();
+      console.log('winner = ', winner);
+    } catch (error) {
+      printErrorMessage(error, 'get winner');
+    }
     return winner;
   };
 
   createWinner = async (winnerParam: Iwinner): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.winners}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(winnerParam),
-    });
-    const winner = await response.json();
-    return winner;
+    let createdWinner;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.winners}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(winnerParam),
+      });
+      errorHandler(response, SUCSESS201);
+      createdWinner = await response.json();
+    } catch (error) { printErrorMessage(error, 'create winner'); }
+    return createdWinner;
   };
 
   updateWinner = async (id: number, winnerParam: Iwinner): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(winnerParam),
-    });
-    const winner = await response.json();
-    return winner;
+    let updatedWinner;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(winnerParam),
+      });
+      errorHandler(response, SUCSESS);
+      updatedWinner = await response.json();
+    } catch (error) { printErrorMessage(error, 'update winner'); }
+    return updatedWinner;
   };
 
   deleteWinner = async (id: number): Promise<Response> => {
-    const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
-      method: 'DELETE',
-    });
-    const deletedWinner = await response.json();
+    let deletedWinner;
+    try {
+      const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
+        method: 'DELETE',
+      });
+      errorHandler(response, SUCSESS);
+      deletedWinner = await response.json();
+    } catch (error) { printErrorMessage(error, 'delete winner'); }
     return deletedWinner;
   };
 
@@ -156,12 +197,8 @@ export default class Communicator {
     if (queryParams.length) {
       return `?${queryParams.map((x) => {
         let res = '';
-        if (x.id) {
-          res = `id=${x.id}`;
-        }
-        if (x.status) {
-          res += `&status=${x.status}`;
-        }
+        if (x.id) res = `id=${x.id}`;
+        if (x.status) res += `&status=${x.status}`;
         return res;
       })}`;
     }
@@ -169,16 +206,24 @@ export default class Communicator {
   };
 
   startORStopCarEngine = async (queryParams: [IengineQueryParams]): Promise<Response> => {
-    const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
-    const result = await response.json();
-    console.log('EngineResult = ', result);
+    let result;
+    try {
+      const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
+      errorHandler(response, SUCSESS);
+      result = await response.json();
+      console.log('EngineResult = ', result);
+    } catch (error) { printErrorMessage(error, 'start/stop engine'); }
     return result;
   };
 
   switchEngineDrive = async (queryParams: [IengineQueryParams]): Promise<Response> => {
-    const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
-    const result = await response.json();
-    console.log('EngineDriveResult = ', result);
+    let result;
+    try {
+      const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
+      errorHandler(response, SUCSESS);
+      result = await response.json();
+      console.log('EngineDriveResult = ', result);
+    } catch (error) { printErrorMessage(error, 'switch engine'); }
     return result;
   };
 }
