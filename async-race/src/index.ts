@@ -1,3 +1,4 @@
+import pageGarage from './pages/garage/create-page-garage';
 import Communicator from './server-communication/class-communicator';
 import { BASE_PATH, ROUT_PATH } from './shared/constants';
 
@@ -28,3 +29,4 @@ const main = async () => {
 };
 
 main();
+document.body.appendChild(pageGarage.garageHeader);

@@ -7,7 +7,7 @@ import {
   Iwinner,
   IwinnersQueryParams,
   IengineQueryParams,
-} from '../shared/interfaces';
+} from '../shared/interfaces-communicator';
 
 export default class Communicator {
   basePath: string;

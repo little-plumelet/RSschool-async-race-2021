@@ -1,4 +1,4 @@
-import { IsmallPathes } from './interfaces';
+import { IsmallPathes } from './interfaces-communicator';
 
 const BASE_PATH = 'http://127.0.0.1:3000'; // путь к серверу для запросов
 const SUCSESS = 200;
