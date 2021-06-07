@@ -1,4 +1,4 @@
-import Header from '../shared-classes/class-header';
+import Header from './shared-classes/class-header';
 
 const header = new Header();
 
