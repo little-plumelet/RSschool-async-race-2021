@@ -1,4 +1,4 @@
-import { SUCSESS, SUCSESS201 } from '../shared/constants';
+import { SUCSESS, SUCSESS201 } from '../shared/constants-server';
 import { errorHandler, printErrorMessage } from './class-communicator-utils';
 import {
   IsmallPathes,
@@ -50,14 +50,13 @@ export default class Communicator {
     return carsList;
   };
 
-  getCar = async (id: number): Promise<Response> => {
+  getCar = async (id: number): Promise<Icar> => {
     let car;
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`);
       errorHandler(response, SUCSESS);
       car = await response.json();
       // Парсим данные, если убедились, что до этого в status было 200, например
-      console.log('!!!car = ', car);
     } catch (error) { printErrorMessage(error, 'get car'); }
     return car;
   };

@@ -19,7 +19,7 @@ const carManipulatorBlockParams = {
     colorInput: {
       tegName: 'input',
       classNames: ['manipulator-input', 'manipulator-input_crerate-car', 'block-manipulator-input_crerate-car-color'],
-      attributes: [['id', 'create-car-color'], ['name', 'create-car-color'], ['type', 'color']],
+      attributes: [['id', 'create-car-color'], ['name', 'create-car-color'], ['type', 'color'], ['value', '#ffffff']],
     },
     button: {
       tegName: 'button',
@@ -43,7 +43,7 @@ const carManipulatorBlockParams = {
     colorInput: {
       tegName: 'input',
       classNames: ['manipulator-input', 'manipulator-input_update-car', 'block-manipulator-input_update-car-color'],
-      attributes: [['id', 'update-car-color'], ['name', 'update-car-color'], ['type', 'color']],
+      attributes: [['id', 'update-car-color'], ['name', 'update-car-color'], ['type', 'color'], ['value', '#ffffff']],
     },
     button: {
       tegName: 'button',

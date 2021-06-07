@@ -1,7 +1,35 @@
-const garageMainContainerParams = {
-  tegName: 'div',
-  classNames: ['garage-container'],
-  attributes: [[]],
+const garageMainPageParams = {
+  container: {
+    tegName: 'div',
+    classNames: ['garage-main-container'],
+    attributes: [[]],
+  },
+  subPagesContainer: {
+    tegName: 'div',
+    classNames: ['garage-subpages-container'],
+    attributes: [[]],
+  },
+  subPageContainer: {
+    tegName: 'div',
+    classNames: ['garage-subpage-container'],
+    attributes: [[]],
+  },
+  titleContainer: {
+    tegName: 'div',
+    classNames: ['garage-title-container'],
+    attributes: [[]],
+  },
+  title: {
+    tegName: 'h1',
+    classNames: ['garage-title'],
+    attributes: [[]],
+    result: 'GARAGE',
+  },
+  totalNbrCars: {
+    tegName: 'div',
+    classNames: ['garage-cars-number'],
+    attributes: [[]],
+  },
 };
 
-export default garageMainContainerParams;
+export default garageMainPageParams;
