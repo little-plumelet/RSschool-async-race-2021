@@ -7,7 +7,9 @@ import communicator from '../../../server-communication/create-communicator';
 export default class RaceModule {
   raceModContainer: HTMLElement;
 
-  raceModCarControl: null | HTMLElement;
+  raceModCarControl: null | RaceModCarControl;
+
+  raceModCarControlEl: null | HTMLElement;
 
   raceModTrackBlock: null | HTMLElement;
 
@@ -22,6 +24,7 @@ export default class RaceModule {
     this.raceModColor = '';
     this.raceModName = '';
     this.raceModCarControl = null;
+    this.raceModCarControlEl = null;
     this.raceModTrackBlock = null;
     this.raceModContainer = createDomElement(raceModuleParams);
     this.raceModContainer.setAttribute('id', `${id}`);
@@ -31,19 +34,27 @@ export default class RaceModule {
   getCarinfo = async (): Promise<void> => {
     // нет ясности как пользоваться данным параметром правильно
     const carInfo = await communicator.getCar(this.raceModId);
-    this.raceModName = carInfo.name;
-    this.raceModColor = carInfo.color;
+    this.raceModName = carInfo?.name;
+    this.raceModColor = carInfo?.color;
   };
 
   createModeBlocks = async (): Promise<void> => {
     await this.getCarinfo();
-    const raceModCarControl = new RaceModCarControl(this.raceModName);
+    this.raceModCarControl = new RaceModCarControl(this.raceModName);
     const raceModTrackBlock = new RaceModTrackBlock(this.raceModColor);
 
-    this.raceModCarControl = raceModCarControl.carControlContainer;
+    this.raceModCarControlEl = this.raceModCarControl.carControlContainer;
     this.raceModTrackBlock = raceModTrackBlock.trackBlockContainer;
 
-    this.raceModContainer.appendChild(this.raceModCarControl);
+    this.raceModContainer.appendChild(this.raceModCarControlEl);
     this.raceModContainer.appendChild(this.raceModTrackBlock);
+    this.select();
   };
+
+  select(): void {
+    this.raceModCarControl?.buttonSelect.addEventListener('click', (e) => {
+      console.log(`The ${this.raceModId} was cklicked!!!!`);
+      console.log(`The ${this.raceModId} was cklicked!!!!`, e.target);
+    });
+  }
 }

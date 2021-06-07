@@ -4,20 +4,20 @@ import { ImanipulatorBlockInputParam } from '../interfaces/car-manipulator-block
 export default class CarManipulatorBlock {
   blockContainer: HTMLElement;
 
-  carName: HTMLElement;
+  carNameInput: HTMLElement;
 
-  carColor: HTMLElement;
+  carColorInput: HTMLElement;
 
   button: HTMLElement;
 
   constructor(params: ImanipulatorBlockInputParam) {
     this.blockContainer = createDomElement(params.container);
-    this.carName = createDomElement(params.nameInput);
-    this.carColor = createDomElement(params.colorInput);
+    this.carNameInput = createDomElement(params.nameInput);
+    this.carColorInput = createDomElement(params.colorInput);
     this.button = createDomElement(params.button);
 
-    this.blockContainer.appendChild(this.carName);
-    this.blockContainer.appendChild(this.carColor);
+    this.blockContainer.appendChild(this.carNameInput);
+    this.blockContainer.appendChild(this.carColorInput);
     this.blockContainer.appendChild(this.button);
   }
 }
