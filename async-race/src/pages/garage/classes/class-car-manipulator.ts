@@ -2,6 +2,8 @@ import createDomElement from '../../shared-functions/create-dom-element';
 import ButtonsManipulatorBlock from './class-buttons-manipulator-block';
 import CarManipulatorBlock from './class-car-manipulator-block';
 import carManipulatorBlockParams from '../params/car-manipulator-block-params';
+import communicator from '../../../server-communication/create-communicator';
+import { Icar } from '../../../shared/interfaces-communicator';
 
 export default class CarManipulator {
   manipulatorContent: HTMLElement;
@@ -29,9 +31,19 @@ export default class CarManipulator {
     this.manipulatorContent.appendChild(this.buttonsBlock);
   }
 
-  updateCarInfo(): void {
-    // this.updateCarBlock.carNameInput.addEventListener('focus')
-  }
+  updateCarInfoInDB = async (id: number): Promise<Response | Icar | undefined> => {
+    let updatedCarInfo;
+    if ((this.updateCarBlock.carColorInput as HTMLInputElement).value
+    && (this.updateCarBlock.carNameInput as HTMLInputElement).value) {
+      const carInfo = {
+        name: (this.updateCarBlock.carNameInput as HTMLInputElement).value,
+        color: (this.updateCarBlock.carColorInput as HTMLInputElement).value,
+        id: Number(id),
+      } as Icar;
+      updatedCarInfo = await communicator.updateCar(id, carInfo);
+    }
+    return updatedCarInfo;
+  };
 
   fillUpdateInput(name: string, color: string): void {
     console.log('NEW NAME = ', name);

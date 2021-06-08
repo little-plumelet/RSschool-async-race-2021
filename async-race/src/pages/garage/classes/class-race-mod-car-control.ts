@@ -21,4 +21,8 @@ export default class RaceModCarControl {
     this.carControlContainer.appendChild(this.buttonRemove);
     this.carControlContainer.appendChild(this.carTitle);
   }
+
+  updateCarTitle(name: string): void {
+    this.carTitle.innerText = name;
+  }
 }

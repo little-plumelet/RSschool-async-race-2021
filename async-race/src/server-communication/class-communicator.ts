@@ -61,7 +61,7 @@ export default class Communicator {
     return car;
   };
 
-  createCar = async (carParam: Icar): Promise<Response> => {
+  createCar = async (carParam: Icar): Promise<Icar> => {
     let createdCar;
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.garage}`, {

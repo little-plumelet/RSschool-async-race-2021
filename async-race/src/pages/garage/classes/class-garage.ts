@@ -4,7 +4,7 @@ import garageMainPageParams from '../params/garage-page-main-container-params';
 import RaceModule from './class-race-module';
 import communicator from '../../../server-communication/create-communicator';
 import CARSPERPAGE from '../../../shared/constants';
-import raceModuleParams from '../params/race-module-params';
+import { Icar } from '../../../shared/interfaces-communicator';
 
 export default class Garage {
   garageContainer: HTMLElement;
@@ -19,6 +19,8 @@ export default class Garage {
 
   garageCarsTotalNbrEl: HTMLElement;
 
+  raceModulesSet: RaceModule[];
+
   garagePagesContainer: HTMLElement;
 
   garagePagesNbr: number;
@@ -27,6 +29,7 @@ export default class Garage {
 
   constructor() {
     this.garageCarManipulator = new CarManipulator();
+    this.raceModulesSet = [];
 
     // назначаем параметры по умолчанию
     this.garagePagesNbr = 1;
@@ -78,9 +81,7 @@ export default class Garage {
         garageSubPage.setAttribute('id', `page-${i + 1}`);
         for (let j = 0; j < CARSPERPAGE; j += 1) {
           const raceModule = new RaceModule(carId);
-          // select(): void {
-          // raceModule.select();
-          // }
+          this.raceModulesSet.push(raceModule);
           carId += 1;
           garageSubPage.appendChild(raceModule.raceModContainer);
         }
@@ -89,14 +90,34 @@ export default class Garage {
     }
   };
 
+  buttonSelectHandler = async (target: HTMLElement): Promise<number> => {
+    const id = Number((target as HTMLElement).parentElement?.parentElement?.getAttribute('id'));
+    const carInfo = await communicator.getCar(id);
+    this.garageCarManipulator.fillUpdateInput(carInfo.name, carInfo.color);
+    return id;
+  };
+
+  buttonUpdateHandler = async (id: number): Promise<void> => {
+    const updatedCarInfo = await this.garageCarManipulator.updateCarInfoInDB(id);
+    this.raceModulesSet?.forEach((el) => {
+      if (el.raceModId === id) {
+        el.raceModCarControl?.updateCarTitle((updatedCarInfo as Icar)?.name);
+        el.raceModTrackBlock?.trackBlock.updateCarIconColor((updatedCarInfo as Icar)?.color);
+      }
+    });
+    (this.garageCarManipulator.updateCarBlock.carColorInput as HTMLInputElement).value = '#ffffff';
+    (this.garageCarManipulator.updateCarBlock.carNameInput as HTMLInputElement).value = '';
+  };
+
   listenTOGaragePage = async (): Promise<void> => {
+    let id: number;
     this.garageContainer.addEventListener('click', async (e): Promise<void> => {
-      if ((e.target as HTMLLIElement).classList.contains('car-control-button_select')) {
-        const id = Number((e.target as HTMLElement).parentElement?.parentElement?.getAttribute('id'));
-        console.log('************************', id);
-        const carInfo = await communicator.getCar(id);
-        console.log('************************', carInfo);
-        this.garageCarManipulator.fillUpdateInput(carInfo.name, carInfo.color);
+      if ((e.target as HTMLElement).classList.contains('car-control-button_select')) {
+        id = await this.buttonSelectHandler(e.target as HTMLElement);
+      }
+
+      if ((e.target as HTMLElement).classList.contains('manipulator-button_update-car') && id) {
+        await this.buttonUpdateHandler(id);
       }
     });
   };

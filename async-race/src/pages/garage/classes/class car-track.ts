@@ -23,4 +23,8 @@ export default class CarTrack {
     this.carIconContainer.innerHTML = iconCarSvg;
     this.carIconContainer.firstElementChild?.firstElementChild?.setAttribute('fill', color);
   }
+
+  updateCarIconColor(color: string): void {
+    this.carIconContainer.firstElementChild?.firstElementChild?.setAttribute('fill', color);
+  }
 }

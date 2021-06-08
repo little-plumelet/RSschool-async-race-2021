@@ -11,7 +11,9 @@ export default class RaceModule {
 
   raceModCarControlEl: null | HTMLElement;
 
-  raceModTrackBlock: null | HTMLElement;
+  raceModTrackBlock: null | RaceModTrackBlock;
+
+  raceModTrackBlockEl: null | HTMLElement;
 
   raceModId: number;
 
@@ -26,6 +28,7 @@ export default class RaceModule {
     this.raceModCarControl = null;
     this.raceModCarControlEl = null;
     this.raceModTrackBlock = null;
+    this.raceModTrackBlockEl = null;
     this.raceModContainer = createDomElement(raceModuleParams);
     this.raceModContainer.setAttribute('id', `${id}`);
     this.createModeBlocks();
@@ -41,13 +44,13 @@ export default class RaceModule {
   createModeBlocks = async (): Promise<void> => {
     await this.getCarinfo();
     this.raceModCarControl = new RaceModCarControl(this.raceModName);
-    const raceModTrackBlock = new RaceModTrackBlock(this.raceModColor);
+    this.raceModTrackBlock = new RaceModTrackBlock(this.raceModColor);
 
     this.raceModCarControlEl = this.raceModCarControl.carControlContainer;
-    this.raceModTrackBlock = raceModTrackBlock.trackBlockContainer;
+    this.raceModTrackBlockEl = this.raceModTrackBlock.trackBlockContainer;
 
     this.raceModContainer.appendChild(this.raceModCarControlEl);
-    this.raceModContainer.appendChild(this.raceModTrackBlock);
+    this.raceModContainer.appendChild(this.raceModTrackBlockEl);
     this.select();
   };
 

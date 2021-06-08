@@ -8,17 +8,19 @@ export default class RaceModTrackBlock {
 
   moveController: HTMLElement;
 
-  trackBlock: HTMLElement;
+  trackBlock: CarTrack;
+
+  trackBlockEl: HTMLElement;
 
   constructor(color: string) {
     const moveController = new CarMoveController();
-    const trackBlock = new CarTrack(color);
+    this.trackBlock = new CarTrack(color);
 
     this.trackBlockContainer = createDomElement(raceModTrackParams.container);
     this.moveController = moveController.container;
-    this.trackBlock = trackBlock.container;
+    this.trackBlockEl = this.trackBlock.container;
 
     this.trackBlockContainer.appendChild(this.moveController);
-    this.trackBlockContainer.appendChild(this.trackBlock);
+    this.trackBlockContainer.appendChild(this.trackBlockEl);
   }
 }
