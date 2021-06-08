@@ -93,7 +93,7 @@ export default class Communicator {
     return updatedCar;
   };
 
-  deleteCar = async (id: number): Promise<Response> => {
+  deleteCar = async (id: number): Promise<Icar> => {
     let deletedCar;
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {

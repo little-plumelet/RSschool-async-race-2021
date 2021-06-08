@@ -11,7 +11,7 @@ import communicator from './server-communication/create-communicator';
 const main = async () => {
   // const newCar = await communicator.createCar({ name: 'CITROEN', color: '#111111' });
   // // const deletedCar = await communicator.deleteCar(1);
-  // const listCars = await communicator.getCars([{ key: '_page', value: 1 }, { key: '_limit', value: 8 }]);
+  const listCars = await communicator.getCars([{ key: '_page', value: 1 }, { key: '_limit', value: 8 }]);
   // const GGG = await communicator.getCar(112);
   // const updatedCar = await communicator.updateCar(5, { name: 'REALCAR', color: '#777777' });
   // // const newWinner = await communicator.createWinner({ id: 135, wins: 2, time: 28 });
@@ -20,7 +20,7 @@ const main = async () => {
   // const engine = await communicator.startORStopCarEngine([{ id: 2002, status: 'started' }]);
   // const engineDrive = await communicator.switchEngineDrive([{ id: 2, status: 'drive' }]);
   // console.log('GGGGCar = ', GGG.name);
-  // console.log('list = ', listCars);
+  console.log('list = ', listCars);
   // console.log('updated car = ', updatedCar);
   // console.log('X!!!! = ', communicator.countXCars);
   // // console.log('newWinner = ', newWinner);
