@@ -5,7 +5,8 @@ interface IsmallPathes {
 
 interface Icar {
   name: string,
-  color: string
+  color: string,
+  id?: number
 }
 
 interface IcarsQueryParams {

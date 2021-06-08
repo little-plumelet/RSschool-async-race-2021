@@ -8,7 +8,9 @@ import { Icar } from '../../../shared/interfaces-communicator';
 export default class CarManipulator {
   manipulatorContent: HTMLElement;
 
-  createCarBlock: HTMLElement;
+  createCarBlock: CarManipulatorBlock;
+
+  createCarBlockEl: HTMLElement;
 
   updateCarBlock: CarManipulatorBlock;
 
@@ -17,16 +19,16 @@ export default class CarManipulator {
   buttonsBlock: HTMLElement;
 
   constructor() {
-    const createCarBlock = new CarManipulatorBlock(carManipulatorBlockParams.createCarBlock);
+    this.createCarBlock = new CarManipulatorBlock(carManipulatorBlockParams.createCarBlock);
     this.updateCarBlock = new CarManipulatorBlock(carManipulatorBlockParams.updateCarBlock);
     const buttonsBlock = new ButtonsManipulatorBlock(carManipulatorBlockParams.blockButtons);
 
     this.manipulatorContent = createDomElement(carManipulatorBlockParams.BlockContainer);
-    this.createCarBlock = createCarBlock.blockContainer;
+    this.createCarBlockEl = this.createCarBlock.blockContainer;
     this.updateCarBlockEl = this.updateCarBlock.blockContainer;
     this.buttonsBlock = buttonsBlock.blockContainer;
 
-    this.manipulatorContent.appendChild(this.createCarBlock);
+    this.manipulatorContent.appendChild(this.createCarBlockEl);
     this.manipulatorContent.appendChild(this.updateCarBlockEl);
     this.manipulatorContent.appendChild(this.buttonsBlock);
   }

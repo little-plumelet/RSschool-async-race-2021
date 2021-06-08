@@ -8,22 +8,22 @@ const carManipulatorBlockParams = {
   createCarBlock: {
     container: {
       tegName: 'div',
-      classNames: ['manipulator-container-block', 'manipulator-container-block_ceate'],
+      classNames: ['manipulator-container-block', 'manipulator-container-block_create'],
       attributes: [[]],
     },
     nameInput: {
       tegName: 'input',
-      classNames: ['manipulator-input', 'manipulator-input_crerate-car', 'manipulator-input_crerate-car-name'],
+      classNames: ['manipulator-input', 'manipulator-input_create-car', 'manipulator-input_create-car-name'],
       attributes: [['id', 'create-car-name'], ['name', 'create-car-name'], ['type', 'text']],
     },
     colorInput: {
       tegName: 'input',
-      classNames: ['manipulator-input', 'manipulator-input_crerate-car', 'block-manipulator-input_crerate-car-color'],
+      classNames: ['manipulator-input', 'manipulator-input_create-car', 'block-manipulator-input_create-car-color'],
       attributes: [['id', 'create-car-color'], ['name', 'create-car-color'], ['type', 'color'], ['value', '#ffffff']],
     },
     button: {
       tegName: 'button',
-      classNames: ['manipulator-button', 'manipulator-button_crerate-car'],
+      classNames: ['manipulator-button', 'manipulator-button_create-car'],
       attributes: [[]],
       result: 'Create',
     },

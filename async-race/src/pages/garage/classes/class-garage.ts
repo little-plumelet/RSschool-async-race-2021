@@ -68,26 +68,67 @@ export default class Garage {
 
   calculatePagesNbr = async (): Promise<Response> => {
     const nbr = await communicator.getCars([{}, { key: '_limit', value: 8 }]); // нет ясности как пользоваться данным параметром правильно
-    this.garagePagesNbr = communicator.countXCars / CARSPERPAGE;
+    this.garagePagesNbr = Math.ceil(communicator.countXCars / CARSPERPAGE);
     return nbr;
   };
 
   createPageOfCars = async (): Promise<void> => {
     await this.getCarsTotalNbr();
-    if (this.garageCarsTotalNbr > CARSPERPAGE) {
-      let carId = 1;
-      for (let i = 0; i < this.garagePagesNbr; i += 1) {
-        const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
-        garageSubPage.setAttribute('id', `page-${i + 1}`);
-        for (let j = 0; j < CARSPERPAGE; j += 1) {
-          const raceModule = new RaceModule(carId);
-          this.raceModulesSet.push(raceModule);
-          carId += 1;
-          garageSubPage.appendChild(raceModule.raceModContainer);
-        }
-        this.garagePagesContainer.appendChild(garageSubPage);
-      }
+    // if (this.garageCarsTotalNbr > CARSPERPAGE) {
+    //   let carId = 1;
+    //   for (let i = 0; i < this.garagePagesNbr; i += 1) {
+    //     const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
+    //     garageSubPage.setAttribute('id', `page-${i + 1}`);
+    //     for (let j = 0; j < CARSPERPAGE; j += 1) {
+    //       const raceModule = new RaceModule(carId);
+    //       this.raceModulesSet.push(raceModule);
+    //       carId += 1;
+    //       garageSubPage.appendChild(raceModule.raceModContainer);
+    //     }
+    //     this.garagePagesContainer.appendChild(garageSubPage);
+    //   }
+    // } else {
+    let carId = 1;
+    const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
+    garageSubPage.setAttribute('id', `page-${carId}`);
+    for (let j = 0; j < this.garageCarsTotalNbr; j += 1) {
+      const raceModule = new RaceModule(carId);
+      this.raceModulesSet.push(raceModule);
+      carId += 1;
+      garageSubPage.appendChild(raceModule.raceModContainer);
     }
+    this.garagePagesContainer.appendChild(garageSubPage);
+    // }
+  };
+
+  buttonCreateHandler = async (): Promise<void> => {
+    const car = {} as Icar;
+
+    car.color = (this.garageCarManipulator.createCarBlock.carColorInput as HTMLInputElement).value;
+    car.name = (this.garageCarManipulator.createCarBlock.carNameInput as HTMLInputElement).value;
+    const createdCar = await communicator.createCar(car);
+    console.log('#####', createdCar);
+    let carId;
+    if (createdCar.id) { carId = createdCar.id; } else carId = 0;
+
+    if (carId) {
+      const raceModule = new RaceModule(carId);
+      await raceModule.getCarinfo();
+      this.raceModulesSet.push(raceModule);
+      const garageSubPage = document.getElementById(`page-${this.garagePagesNbr}`);
+      if (garageSubPage?.childNodes.length === CARSPERPAGE) {
+        const newGarageSubPage = createDomElement(garageMainPageParams.subPageContainer);
+        newGarageSubPage.setAttribute('id', `page-${this.garagePagesNbr + 1}`);
+        newGarageSubPage.appendChild(raceModule.raceModContainer);
+        this.garagePagesContainer.appendChild(newGarageSubPage);
+      } else garageSubPage?.appendChild(raceModule.raceModContainer);
+    }
+
+    (this.garageCarManipulator.createCarBlock.carColorInput as HTMLInputElement).value = '#ffffff';
+    (this.garageCarManipulator.createCarBlock.carNameInput as HTMLInputElement).value = '';
+
+    this.getCarsTotalNbr();
+    this.calculatePagesNbr();
   };
 
   buttonSelectHandler = async (target: HTMLElement): Promise<number> => {
@@ -111,7 +152,12 @@ export default class Garage {
 
   listenTOGaragePage = async (): Promise<void> => {
     let id: number;
+
     this.garageContainer.addEventListener('click', async (e): Promise<void> => {
+      if ((e.target as HTMLElement).classList.contains('manipulator-button_create-car')) {
+        this.buttonCreateHandler();
+      }
+
       if ((e.target as HTMLElement).classList.contains('car-control-button_select')) {
         id = await this.buttonSelectHandler(e.target as HTMLElement);
       }
