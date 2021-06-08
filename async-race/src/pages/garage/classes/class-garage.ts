@@ -59,17 +59,15 @@ export default class Garage {
     this.listenTOGaragePage();
   }
 
-  getCarsTotalNbr = async (): Promise<Response> => {
-    const nbr = await communicator.getCars([{}, { key: '_limit', value: 8 }]); // нет ясности как пользоваться данным параметром правильно
+  getCarsTotalNbr = async (): Promise<void> => {
+    await communicator.getCars([{}, { key: '_limit', value: 8 }]); // нет ясности как пользоваться данным параметром правильно
     this.garageCarsTotalNbrEl.innerText = `(${communicator.countXCars})`;
     this.garageCarsTotalNbr = communicator.countXCars;
-    return nbr;
   };
 
-  calculatePagesNbr = async (): Promise<Response> => {
-    const nbr = await communicator.getCars([{}, { key: '_limit', value: 8 }]); // нет ясности как пользоваться данным параметром правильно
+  calculatePagesNbr = async (): Promise<void> => {
+    await communicator.getCars([{}, { key: '_limit', value: 8 }]); // нет ясности как пользоваться данным параметром правильно
     this.garagePagesNbr = Math.ceil(communicator.countXCars / CARSPERPAGE);
-    return nbr;
   };
 
   renderPages(): void {
@@ -88,19 +86,22 @@ export default class Garage {
     this.calculatePagesNbr();
   }
 
-  createSetOfPages(): void {
-    let carId = 1;
-
-    for (let j = 0; j < this.garageCarsTotalNbr; j += 1) {
-      const raceModule = new RaceModule(carId);
+  createSetOfPages = async (): Promise<void> => {
+    const cardIdArr: number[] = [];
+    const cars = await communicator.getCars([{}, {}]);
+    cars.forEach((element) => {
+      if (element.id) cardIdArr.push(element.id);
+    });
+    this.raceModulesSet = [];
+    cardIdArr.forEach((element) => {
+      const raceModule = new RaceModule(element);
       this.raceModulesSet.push(raceModule);
-      carId += 1;
-    }
-  }
+    });
+  };
 
   createPageOfCars = async (): Promise<void> => {
     await this.getCarsTotalNbr();
-    this.createSetOfPages();
+    await this.createSetOfPages();
     this.renderPages();
   };
 
@@ -115,7 +116,6 @@ export default class Garage {
 
     if (carId) {
       const raceModule = new RaceModule(carId);
-      await raceModule.getCarinfo();
       this.raceModulesSet.push(raceModule);
       const garageSubPage = document.getElementById(`page-${this.garagePagesNbr}`);
       if (garageSubPage?.childNodes.length === CARSPERPAGE) {
@@ -167,6 +167,12 @@ export default class Garage {
     (this.garageCarManipulator.updateCarBlock.carNameInput as HTMLInputElement).value = '';
   };
 
+  buttonStartHandler = async (target: HTMLElement): Promise<void> => {
+    const id = Number((target as HTMLElement).parentElement?.parentElement?.parentElement?.getAttribute('id'));
+    await communicator.startORStopCarEngine([{ id, status: 'started' }]);
+    await communicator.switchEngineDrive([{ id, status: 'drive' }]);
+  };
+
   listenTOGaragePage = async (): Promise<void> => {
     let id: number;
 
@@ -185,6 +191,11 @@ export default class Garage {
 
       if ((e.target as HTMLElement).classList.contains('manipulator-button_update-car') && id) {
         await this.buttonUpdateHandler(id);
+      }
+
+      if ((e.target as HTMLElement).classList.contains('move-control-button_start')) {
+        console.log('I was started!!!!!');
+        await this.buttonStartHandler(e.target as HTMLElement);
       }
     });
   };

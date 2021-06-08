@@ -36,7 +36,7 @@ export default class Communicator {
     return '';
   };
 
-  getCars = async (queryParams: IcarsQueryParams[]): Promise<Response> => {
+  getCars = async (queryParams: IcarsQueryParams[]): Promise<Icar[]> => {
     let carsList;
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
@@ -221,7 +221,7 @@ export default class Communicator {
       const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
       errorHandler(response, SUCSESS);
       result = await response.json();
-      console.log('EngineDriveResult = ', result);
+      console.log('EngineDriveResultDRIVE = ', result);
     } catch (error) { printErrorMessage(error, 'switch engine'); }
     return result;
   };
