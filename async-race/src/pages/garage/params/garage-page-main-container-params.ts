@@ -20,7 +20,7 @@ const garageMainPageParams = {
     attributes: [[]],
   },
   title: {
-    tegName: 'h1',
+    tegName: 'h2',
     classNames: ['garage-title'],
     attributes: [[]],
     result: 'GARAGE',

@@ -3,7 +3,7 @@ import CarManipulator from './class-car-manipulator';
 import garageMainPageParams from '../params/garage-page-main-container-params';
 import RaceModule from './class-race-module';
 import communicator from '../../../server-communication/create-communicator';
-import CARSPERPAGE from '../../../shared/constants';
+import { CARSPERPAGE } from '../../../shared/constants';
 import { Icar } from '../../../shared/interfaces-communicator';
 
 export default class Garage {
@@ -42,14 +42,14 @@ export default class Garage {
     this.garageTitleBlock = createDomElement(garageMainPageParams.titleContainer);
     this.garageTitle = createDomElement(garageMainPageParams.title);
     this.garageCarsTotalNbrEl = createDomElement(garageMainPageParams.totalNbrCars);
-    this.getCarsTotalNbr();
+    // this.getCarsTotalNbr();
     this.calculatePagesNbr();
 
     // create pagesContainer
     this.garagePagesContainer = createDomElement(garageMainPageParams.subPagesContainer);
 
     // нужно создать контейнеров из расчета garageCarsTotalNbr/7
-    this.createPageOfCars();
+    this.createPagesOfCars();
 
     this.garageContainer.appendChild(this.garageCarManipulatorEl);
     this.garageContainer.appendChild(this.garageTitleBlock);
@@ -99,7 +99,7 @@ export default class Garage {
     });
   };
 
-  createPageOfCars = async (): Promise<void> => {
+  createPagesOfCars = async (): Promise<void> => {
     await this.getCarsTotalNbr();
     await this.createSetOfPages();
     this.renderPages();

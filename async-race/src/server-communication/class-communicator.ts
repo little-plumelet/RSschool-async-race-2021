@@ -121,7 +121,7 @@ export default class Communicator {
     return '';
   };
 
-  getWinners = async (queryParams: IwinnersQueryParams[]): Promise<Response> => {
+  getWinners = async (queryParams: IwinnersQueryParams[]): Promise<Iwinner[]> => {
     let winnersList;
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.winners}${this.generateWinnersQueryString(queryParams)}`);

@@ -9,6 +9,12 @@ interface Icar {
   id?: number
 }
 
+interface Iwinner {
+  id: number,
+  wins: number,
+  time: number,
+}
+
 interface IcarsQueryParams {
   key?: '_page' | '_limit',
   value?: number,
