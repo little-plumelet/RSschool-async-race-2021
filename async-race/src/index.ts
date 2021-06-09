@@ -5,7 +5,7 @@ import pageWinners from './pages/winners/create-page-winners';
 import communicator from './server-communication/create-communicator';
 import router from './router/create-router';
 import navToSubPage from './shared/functions/function-subpage-navigation';
-
+import getCurrerntPageNbr from './shared/functions/function-get-current-page-number';
 // import Communicator from './server-communication/class-communicator';
 // import { BASE_PATH, ROUT_PATH } from './shared/constants';
 
@@ -42,14 +42,6 @@ document.body.appendChild(header.header);
 document.body.appendChild(pageGarage.garageContainer);
 document.body.appendChild(pageWinners.winnersContainer);
 router.add('garage/1', navToSubPage(1, pageGarage)); // страница при обновлениии
-
-function getCurrerntPageNbr(): number {
-  const regex = /\/\d+$/g;
-
-  const page = (window.location.hash).match(regex)?.splice(0, 1).join('');
-  const pageNbr = Number(page?.slice(1, page.length));
-  return pageNbr;
-}
 
 window.addEventListener('popstate', () => {
   // highlightNavItem(window.location.hash);

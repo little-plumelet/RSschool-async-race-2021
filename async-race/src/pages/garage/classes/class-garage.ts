@@ -6,6 +6,7 @@ import communicator from '../../../server-communication/create-communicator';
 import { CARSPERPAGE } from '../../../shared/constants';
 import { Icar } from '../../../shared/interfaces-communicator';
 import router from '../../../router/create-router';
+import getCurrerntPageNbr from '../../../shared/functions/function-get-current-page-number';
 
 function createSubPage(pageNbr: number): HTMLElement {
   const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
@@ -198,18 +199,24 @@ export default class Garage {
     await communicator.switchEngineDrive([{ id, status: 'drive' }]);
   };
 
-  buttonNextHandler = async (target: HTMLElement): Promise<void> => {
-    const regex = /\/\d+$/g;
-    const page = (window.location.hash).match(regex)?.splice(0, 1).join('');
-    const pageNbr = Number(page?.slice(1, page.length)) + 1;
-    console.log('NUMBER PAGE = ', pageNbr);
+  buttonNextHandler = async (): Promise<void> => {
+    const pageNbr = getCurrerntPageNbr() + 1;
     this.garagePagesContainer.childNodes.forEach((element) => {
       (element as HTMLElement).classList.add('hidden');
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
         (element as HTMLElement).classList.remove('hidden');
-        router.add(`garage/${pageNbr}`, () => {
-          console.log('welcome in ', window.location.hash, 'page');
-        });
+        router.add(`garage/${pageNbr}`, () => {});
+      }
+    });
+  };
+
+  buttonPrevHandler = async (): Promise<void> => {
+    const pageNbr = getCurrerntPageNbr() - 1;
+    this.garagePagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
+        (element as HTMLElement).classList.remove('hidden');
+        router.add(`garage/${pageNbr}`, () => {});
       }
     });
   };
@@ -239,7 +246,11 @@ export default class Garage {
       }
 
       if ((e.target as HTMLElement).classList.contains('garage-button_next')) {
-        await this.buttonNextHandler(e.target as HTMLElement);
+        await this.buttonNextHandler();
+      }
+
+      if ((e.target as HTMLElement).classList.contains('garage-button_prev')) {
+        await this.buttonPrevHandler();
       }
     });
   };
