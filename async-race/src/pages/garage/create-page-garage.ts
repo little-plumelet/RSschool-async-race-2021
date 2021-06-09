@@ -1,4 +1,4 @@
-import Garage from './pages/garage/classes/class-garage';
+import Garage from './classes/class-garage';
 
 const pageGarage = new Garage();
 

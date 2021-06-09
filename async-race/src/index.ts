@@ -1,6 +1,6 @@
 import './styles.scss';
 import header from './pages/create-header';
-import pageGarage from './create-page-garage';
+import pageGarage from './pages/garage/create-page-garage';
 import pageWinners from './pages/winners/create-page-winners';
 import communicator from './server-communication/create-communicator';
 import router from './router/create-router';

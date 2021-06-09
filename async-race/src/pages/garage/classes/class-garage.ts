@@ -3,10 +3,18 @@ import CarManipulator from './class-car-manipulator';
 import garageMainPageParams from '../params/garage-page-main-container-params';
 import RaceModule from './class-race-module';
 import communicator from '../../../server-communication/create-communicator';
-import { CARSPERPAGE } from '../../../shared/constants';
+import { CARSPERPAGE, CARSBUNCHNBR, INPUTCOLOR, HEXCOLORLETTERS } from '../../../shared/constants';
 import { Icar } from '../../../shared/interfaces-communicator';
 import router from '../../../router/create-router';
 import getCurrerntPageNbr from '../../../shared/functions/function-get-current-page-number';
+import carNamesArr from '../../../shared/data-cars-names';
+import carModelsArr from '../../../shared/data-cars-models';
+import carColorArr from '../../../shared/data-cars-colors';
+import raceModuleParams from '../params/race-module-params';
+
+function getRandomIntInclusive(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
+}
 
 function createSubPage(pageNbr: number): HTMLElement {
   const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
@@ -96,10 +104,11 @@ export default class Garage {
     this.garagePagesNbr = Math.ceil(communicator.countXCars / CARSPERPAGE);
   };
 
-  renderPages(): void {
+  renderPages = async (): Promise<void> => {
     while (this.garagePagesContainer.firstElementChild) {
       this.garagePagesContainer.firstElementChild.remove();
     }
+    await this.calculatePagesNbr();
     for (let j = 0; j < this.garagePagesNbr; j += 1) {
       const garageSubPage = createSubPage(j + 1);
       for (let i = 0; i < CARSPERPAGE; i += 1) {
@@ -109,9 +118,9 @@ export default class Garage {
       }
       this.garagePagesContainer.appendChild(garageSubPage);
     }
-    this.getCarsTotalNbr();
-    this.calculatePagesNbr();
-  }
+    await this.getCarsTotalNbr();
+    await this.calculatePagesNbr();
+  };
 
   createSetOfModules = async (): Promise<void> => {
     const cardIdArr: number[] = [];
@@ -126,6 +135,14 @@ export default class Garage {
     });
   };
 
+  updateSetOfModules = async (car: Icar): Promise<void> => {
+    const createdCar = await communicator.createCar(car);
+    if (createdCar.id) {
+      const raceModule = new RaceModule(createdCar.id);
+      this.raceModulesSet.push(raceModule);
+    }
+  };
+
   createPagesOfCars = async (): Promise<void> => {
     await this.getCarsTotalNbr();
     await this.createSetOfModules();
@@ -134,29 +151,11 @@ export default class Garage {
 
   buttonCreateHandler = async (): Promise<void> => {
     const car = {} as Icar;
-    let carId;
 
     car.color = (this.garageCarManipulator.createCarBlock.carColorInput as HTMLInputElement).value;
     car.name = (this.garageCarManipulator.createCarBlock.carNameInput as HTMLInputElement).value;
-    const createdCar = await communicator.createCar(car);
-    if (createdCar.id) { carId = createdCar.id; } else carId = 0;
-
-    if (carId) {
-      const raceModule = new RaceModule(carId);
-      this.raceModulesSet.push(raceModule);
-      const garageSubPage = document.getElementById(`page-${this.garagePagesNbr}`);
-      if (garageSubPage?.childNodes.length === (CARSPERPAGE + 1)) {
-        const newGarageSubPage = createSubPage(this.garagePagesNbr + 1);
-        newGarageSubPage.appendChild(raceModule.raceModContainer);
-        this.garagePagesContainer.appendChild(newGarageSubPage);
-      } else garageSubPage?.appendChild(raceModule.raceModContainer);
-    }
-
-    (this.garageCarManipulator.createCarBlock.carColorInput as HTMLInputElement).value = '#ffffff';
-    (this.garageCarManipulator.createCarBlock.carNameInput as HTMLInputElement).value = '';
-
-    this.getCarsTotalNbr();
-    this.calculatePagesNbr();
+    await this.updateSetOfModules(car);
+    this.renderPages();
   };
 
   buttonRemoveHandler = async (target: HTMLElement): Promise<void> => {
@@ -189,7 +188,7 @@ export default class Garage {
         el.raceModTrackBlock?.trackBlock.updateCarIconColor((updatedCarInfo as Icar)?.color);
       }
     });
-    (this.garageCarManipulator.updateCarBlock.carColorInput as HTMLInputElement).value = '#ffffff';
+    (this.garageCarManipulator.updateCarBlock.carColorInput as HTMLInputElement).value = INPUTCOLOR;
     (this.garageCarManipulator.updateCarBlock.carNameInput as HTMLInputElement).value = '';
   };
 
@@ -219,6 +218,24 @@ export default class Garage {
         router.add(`garage/${pageNbr}`, () => {});
       }
     });
+  };
+
+  buttonCreateCarsHandler = async (): Promise<void> => {
+    const cars = [{} as Icar];
+
+    for (let i = 0; i < 10; i += 1) {
+      const car = {} as Icar;
+      car.name = carNamesArr[getRandomIntInclusive(0, carNamesArr.length - 1)];
+      car.name = `${car.name} ${carModelsArr[getRandomIntInclusive(0, carModelsArr.length - 1)]}`;
+      car.color = '#';
+      for (let j = 0; j < HEXCOLORLETTERS; j += 1) {
+        car.color += carColorArr[getRandomIntInclusive(0, carColorArr.length - 1)];
+      }
+      cars.push(car);
+    }
+    cars.splice(0, 1);
+    cars.forEach(async (element) => { await this.updateSetOfModules(element); });
+    this.renderPages();
   };
 
   listenTOGaragePage = async (): Promise<void> => {
@@ -251,6 +268,10 @@ export default class Garage {
 
       if ((e.target as HTMLElement).classList.contains('garage-button_prev')) {
         await this.buttonPrevHandler();
+      }
+
+      if ((e.target as HTMLElement).classList.contains('manipulator-button_create-bunch')) {
+        await this.buttonCreateCarsHandler();
       }
     });
   };
