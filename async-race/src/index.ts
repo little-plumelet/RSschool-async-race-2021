@@ -1,8 +1,11 @@
 import './styles.scss';
 import header from './pages/create-header';
-import pageGarage from './pages/garage/create-page-garage';
+import pageGarage from './create-page-garage';
 import pageWinners from './pages/winners/create-page-winners';
 import communicator from './server-communication/create-communicator';
+import router from './router/create-router';
+import navToSubPage from './shared/functions/function-subpage-navigation';
+
 // import Communicator from './server-communication/class-communicator';
 // import { BASE_PATH, ROUT_PATH } from './shared/constants';
 
@@ -38,3 +41,27 @@ main();
 document.body.appendChild(header.header);
 document.body.appendChild(pageGarage.garageContainer);
 document.body.appendChild(pageWinners.winnersContainer);
+router.add('garage/1', navToSubPage(1, pageGarage)); // страница при обновлениии
+
+function getCurrerntPageNbr(): number {
+  const regex = /\/\d+$/g;
+
+  const page = (window.location.hash).match(regex)?.splice(0, 1).join('');
+  const pageNbr = Number(page?.slice(1, page.length));
+  return pageNbr;
+}
+
+window.addEventListener('popstate', () => {
+  // highlightNavItem(window.location.hash);
+  if (window.location.hash.includes('#garage')) {
+    pageGarage.garageContainer.classList.remove('hidden');
+    pageWinners.winnersContainer.classList.add('hidden');
+    const pageNbr = getCurrerntPageNbr();
+    router.add(`garage/${pageNbr}`, navToSubPage(pageNbr, pageGarage));
+  } else {
+    pageGarage.garageContainer.classList.add('hidden');
+    pageWinners.winnersContainer.classList.remove('hidden');
+    const pageNbr = getCurrerntPageNbr();
+    router.add(`winners/${pageNbr}`, navToSubPage(pageNbr, pageWinners));
+  }
+});

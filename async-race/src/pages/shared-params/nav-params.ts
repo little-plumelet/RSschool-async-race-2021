@@ -18,13 +18,13 @@ const navParams = {
   navRefGarage: {
     tegName: 'a',
     classNames: ['item-ref'],
-    attributes: [['href', './#garage']],
+    attributes: [['href', './#garage/1']],
     result: 'TO GARAGE',
   },
   navRefWinners: {
     tegName: 'a',
     classNames: ['item-ref'],
-    attributes: [['href', './#winners']],
+    attributes: [['href', './#winners/1']],
     result: 'TO WINNERS',
   },
 };

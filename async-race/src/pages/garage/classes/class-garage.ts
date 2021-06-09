@@ -5,6 +5,17 @@ import RaceModule from './class-race-module';
 import communicator from '../../../server-communication/create-communicator';
 import { CARSPERPAGE } from '../../../shared/constants';
 import { Icar } from '../../../shared/interfaces-communicator';
+import router from '../../../router/create-router';
+
+function createSubPage(pageNbr: number): HTMLElement {
+  const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
+  const garageSubPageTitle = createDomElement(garageMainPageParams.subPageTitle);
+  garageSubPage.setAttribute('id', `page-${pageNbr}`);
+  if (pageNbr > 1) garageSubPage.classList.add('hidden');
+  garageSubPageTitle.innerText = `Page ${pageNbr}`;
+  garageSubPage.appendChild(garageSubPageTitle);
+  return garageSubPage;
+}
 
 export default class Garage {
   garageContainer: HTMLElement;
@@ -23,16 +34,26 @@ export default class Garage {
 
   garagePagesContainer: HTMLElement;
 
+  garagePageTitleIndex: number;
+
   garagePagesNbr: number;
 
   garageCarsTotalNbr: number;
+
+  garageNextPageButton: HTMLElement;
+
+  garagePrevPageButton: HTMLElement;
+
+  pageName: string;
 
   constructor() {
     this.garageCarManipulator = new CarManipulator();
     this.raceModulesSet = [];
 
     // назначаем параметры по умолчанию
+    this.pageName = 'garage';
     this.garagePagesNbr = 1;
+    this.garagePageTitleIndex = 1;
     this.garageCarsTotalNbr = 0;
 
     this.garageContainer = createDomElement(garageMainPageParams.container);
@@ -42,7 +63,6 @@ export default class Garage {
     this.garageTitleBlock = createDomElement(garageMainPageParams.titleContainer);
     this.garageTitle = createDomElement(garageMainPageParams.title);
     this.garageCarsTotalNbrEl = createDomElement(garageMainPageParams.totalNbrCars);
-    // this.getCarsTotalNbr();
     this.calculatePagesNbr();
 
     // create pagesContainer
@@ -51,11 +71,16 @@ export default class Garage {
     // нужно создать контейнеров из расчета garageCarsTotalNbr/7
     this.createPagesOfCars();
 
+    this.garageNextPageButton = createDomElement(garageMainPageParams.nextPageButton);
+    this.garagePrevPageButton = createDomElement(garageMainPageParams.prevPageButton);
+
     this.garageContainer.appendChild(this.garageCarManipulatorEl);
     this.garageContainer.appendChild(this.garageTitleBlock);
     this.garageTitleBlock.appendChild(this.garageTitle);
     this.garageTitleBlock.appendChild(this.garageCarsTotalNbrEl);
     this.garageContainer.appendChild(this.garagePagesContainer);
+    this.garageContainer.appendChild(this.garagePrevPageButton);
+    this.garageContainer.appendChild(this.garageNextPageButton);
     this.listenTOGaragePage();
   }
 
@@ -71,22 +96,23 @@ export default class Garage {
   };
 
   renderPages(): void {
-    let carId = 1;
-    const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
-    garageSubPage.setAttribute('id', `page-${carId}`);
     while (this.garagePagesContainer.firstElementChild) {
       this.garagePagesContainer.firstElementChild.remove();
     }
-    for (let i = 0; i < this.raceModulesSet.length; i += 1) {
-      carId += 1;
-      garageSubPage.appendChild(this.raceModulesSet[i].raceModContainer);
+    for (let j = 0; j < this.garagePagesNbr; j += 1) {
+      const garageSubPage = createSubPage(j + 1);
+      for (let i = 0; i < CARSPERPAGE; i += 1) {
+        if (this.raceModulesSet[j * CARSPERPAGE + i]) {
+          garageSubPage.appendChild(this.raceModulesSet[j * CARSPERPAGE + i].raceModContainer);
+        }
+      }
+      this.garagePagesContainer.appendChild(garageSubPage);
     }
-    this.garagePagesContainer.appendChild(garageSubPage);
     this.getCarsTotalNbr();
     this.calculatePagesNbr();
   }
 
-  createSetOfPages = async (): Promise<void> => {
+  createSetOfModules = async (): Promise<void> => {
     const cardIdArr: number[] = [];
     const cars = await communicator.getCars([{}, {}]);
     cars.forEach((element) => {
@@ -101,26 +127,25 @@ export default class Garage {
 
   createPagesOfCars = async (): Promise<void> => {
     await this.getCarsTotalNbr();
-    await this.createSetOfPages();
+    await this.createSetOfModules();
     this.renderPages();
   };
 
   buttonCreateHandler = async (): Promise<void> => {
     const car = {} as Icar;
+    let carId;
 
     car.color = (this.garageCarManipulator.createCarBlock.carColorInput as HTMLInputElement).value;
     car.name = (this.garageCarManipulator.createCarBlock.carNameInput as HTMLInputElement).value;
     const createdCar = await communicator.createCar(car);
-    let carId;
     if (createdCar.id) { carId = createdCar.id; } else carId = 0;
 
     if (carId) {
       const raceModule = new RaceModule(carId);
       this.raceModulesSet.push(raceModule);
       const garageSubPage = document.getElementById(`page-${this.garagePagesNbr}`);
-      if (garageSubPage?.childNodes.length === CARSPERPAGE) {
-        const newGarageSubPage = createDomElement(garageMainPageParams.subPageContainer);
-        newGarageSubPage.setAttribute('id', `page-${this.garagePagesNbr + 1}`);
+      if (garageSubPage?.childNodes.length === (CARSPERPAGE + 1)) {
+        const newGarageSubPage = createSubPage(this.garagePagesNbr + 1);
         newGarageSubPage.appendChild(raceModule.raceModContainer);
         this.garagePagesContainer.appendChild(newGarageSubPage);
       } else garageSubPage?.appendChild(raceModule.raceModContainer);
@@ -173,6 +198,22 @@ export default class Garage {
     await communicator.switchEngineDrive([{ id, status: 'drive' }]);
   };
 
+  buttonNextHandler = async (target: HTMLElement): Promise<void> => {
+    const regex = /\/\d+$/g;
+    const page = (window.location.hash).match(regex)?.splice(0, 1).join('');
+    const pageNbr = Number(page?.slice(1, page.length)) + 1;
+    console.log('NUMBER PAGE = ', pageNbr);
+    this.garagePagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
+        (element as HTMLElement).classList.remove('hidden');
+        router.add(`garage/${pageNbr}`, () => {
+          console.log('welcome in ', window.location.hash, 'page');
+        });
+      }
+    });
+  };
+
   listenTOGaragePage = async (): Promise<void> => {
     let id: number;
 
@@ -194,8 +235,11 @@ export default class Garage {
       }
 
       if ((e.target as HTMLElement).classList.contains('move-control-button_start')) {
-        console.log('I was started!!!!!');
         await this.buttonStartHandler(e.target as HTMLElement);
+      }
+
+      if ((e.target as HTMLElement).classList.contains('garage-button_next')) {
+        await this.buttonNextHandler(e.target as HTMLElement);
       }
     });
   };

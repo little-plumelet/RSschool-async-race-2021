@@ -22,7 +22,10 @@ export default class Winners {
 
   winnersPagesNbr: number;
 
+  pageName: string;
+
   constructor() {
+    this.pageName = 'winners';
     this.winnersPagesNbr = 1;
     this.winnersTotalNbr = 0;
     this.setOfWinners = [];
