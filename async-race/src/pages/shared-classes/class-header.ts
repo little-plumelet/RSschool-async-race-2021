@@ -26,14 +26,14 @@ export default class Header {
         pageWinners.pageNbrForReturn = getCurrerntPageNbr();
         pageGarage.garageContainer.classList.remove('hidden');
         pageWinners.winnersContainer.classList.add('hidden');
-        router.add(`garage/${pageWinners.pageNbrForReturn}`, navToSubPage(pageWinners.pageNbrForReturn, pageWinners));
+        router.add(`garage/${pageGarage.pageNbrForReturn}`, navToSubPage(pageGarage.pageNbrForReturn, pageWinners));
       }
 
       if ((e.target as HTMLElement).classList.contains('item-ref_winners')) {
         pageGarage.pageNbrForReturn = getCurrerntPageNbr();
         pageGarage.garageContainer.classList.add('hidden');
         pageWinners.winnersContainer.classList.remove('hidden');
-        router.add(`winners/${pageGarage.pageNbrForReturn}`, navToSubPage(pageGarage.pageNbrForReturn, pageGarage));
+        router.add(`winners/${pageWinners.pageNbrForReturn}`, navToSubPage(pageWinners.pageNbrForReturn, pageWinners));
       }
     });
   }
