@@ -2,7 +2,8 @@ import communicator from '../../../server-communication/create-communicator';
 import winnersMainPageParams from '../params/winners-main-page-params';
 import createDomElement from '../../shared-functions/create-dom-element';
 import WinnerLine from './class-winner-line';
-import { Iwinner } from '../../../shared/interfaces-communicator';
+import createSubPage from '../../shared-functions/create-sub-page';
+import { Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
 import { WINNERSPERPAGE } from '../../../shared/constants';
 
 export default class Winners {
@@ -41,7 +42,6 @@ export default class Winners {
     this.winnersTitleBlock.appendChild(this.winnersTotalNbrEl);
     this.winnersContainer.appendChild(this.winnersTitleBlock);
     this.winnersContainer.appendChild(this.winnersPagesContainer);
-    // this.getWinnersTotalNbr();
     this.calculatePagesNbr();
   }
 
@@ -60,36 +60,72 @@ export default class Winners {
   createSetOfWinnerLines = async (): Promise<void> => {
     const winnersArr: Iwinner[] = [];
     const winners = await communicator.getWinners([{}, {}]);
-    console.log('WWWW', winners);
     winners.forEach((element) => {
       if (element) winnersArr.push(element);
     });
     console.log('WWWWARR', winnersArr);
+    this.setOfWinners = [];
     winnersArr.forEach((element) => {
       const winnerLine = new WinnerLine(element);
       this.setOfWinners.push(winnerLine);
     });
   };
 
-  renderWinnersTable(): void {
-    let carId = 1;
-    const winnersSubPage = createDomElement(winnersMainPageParams.subPageContainer);
-    winnersSubPage.setAttribute('id', `winer-page-${carId}`);
+  renderWinnersTable = async (): Promise<void> => {
     while (this.winnersPagesContainer.firstElementChild) {
       this.winnersPagesContainer.firstElementChild.remove();
     }
-    for (let i = 0; i < this.setOfWinners.length; i += 1) {
-      carId += 1;
-      winnersSubPage.appendChild(this.setOfWinners[i].winnerLineContainer);
+    await this.calculatePagesNbr();
+    for (let j = 0; j < this.winnersPagesNbr; j += 1) {
+      const winnersSubPage = createSubPage(j + 1, winnersMainPageParams);
+      for (let i = 0; i < WINNERSPERPAGE; i += 1) {
+        if (this.setOfWinners[j * WINNERSPERPAGE + i]) {
+          winnersSubPage.appendChild(this.setOfWinners[j * WINNERSPERPAGE + i].winnerLineContainer);
+        }
+      }
+      this.winnersPagesContainer.appendChild(winnersSubPage);
+      this.winnersPagesContainer.appendChild(winnersSubPage);
     }
-    this.winnersPagesContainer.appendChild(winnersSubPage);
-    this.getWinnersTotalNbr();
-    this.calculatePagesNbr();
-  }
+    await this.getWinnersTotalNbr();
+    await this.calculatePagesNbr();
+  };
 
   createPagesOfWinners = async (): Promise<void> => {
     await this.getWinnersTotalNbr();
     await this.createSetOfWinnerLines();
     this.renderWinnersTable();
+  };
+
+  updateWinnersTable = async (winnerCompaund: {
+    winner: IraceResult;
+    timeWinner: number;
+  }): Promise<void> => {
+    let flagUpdated = false;
+    const winsStartNbr = 1;
+
+    console.log('*********', this.setOfWinners);
+    console.log('*********', winnerCompaund);
+
+    if (winnerCompaund.winner.id) {
+      const winnerParam = {
+        id: winnerCompaund.winner.id,
+        wins: winsStartNbr,
+        time: winnerCompaund.timeWinner,
+      };
+
+      this.setOfWinners.forEach((element) => {
+        if (element.winnerId === winnerCompaund.winner.id) {
+          if (element.bestTime < winnerCompaund.timeWinner) {
+            winnerParam.time = element.bestTime;
+          }
+          winnerParam.wins = element.winsNumber + 1;
+          flagUpdated = true;
+        }
+      });
+      if (flagUpdated) await communicator.updateWinner(winnerParam.id, winnerParam);
+      else await communicator.createWinner(winnerParam);
+      this.calculatePagesNbr();
+      this.createPagesOfWinners();
+    }
   };
 }

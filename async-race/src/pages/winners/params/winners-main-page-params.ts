@@ -30,6 +30,11 @@ const winnersMainPageParams = {
     classNames: ['winners-subpage-container'],
     attributes: [[]],
   },
+  subPageTitle: {
+    tegName: 'h3',
+    classNames: ['winners-subpage-title'],
+    attributes: [[]],
+  },
 };
 
 export default winnersMainPageParams;

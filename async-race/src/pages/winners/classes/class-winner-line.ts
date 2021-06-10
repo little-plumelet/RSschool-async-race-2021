@@ -55,6 +55,7 @@ export default class WinnerLine {
   fillWinnerLine = async (): Promise<void> => {
     const winner = await communicator.getCar(this.winnerId);
     console.log('!!!!winnerCar!!!', winner);
+    this.carName = winner.name;
     this.createCarIcon(winner.color);
     this.carNameEl.innerText = winner.name;
     this.winsNumberEl.innerText = this.winsNumber.toString();

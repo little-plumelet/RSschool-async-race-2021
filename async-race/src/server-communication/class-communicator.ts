@@ -166,6 +166,7 @@ export default class Communicator {
 
   updateWinner = async (id: number, winnerParam: Iwinner): Promise<Response> => {
     let updatedWinner;
+    console.log('))))))))', winnerParam.wins, winnerParam.time);
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
         method: 'PUT',

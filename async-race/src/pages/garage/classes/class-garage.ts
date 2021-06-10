@@ -10,6 +10,7 @@ import carNamesArr from '../../../shared/data-cars-names';
 import carModelsArr from '../../../shared/data-cars-models';
 import carColorArr from '../../../shared/data-cars-colors';
 import calculateWinner from '../../../shared/functions/function-calculate-winner-of-race';
+import createSubPage from '../../shared-functions/create-sub-page';
 import {
   CARSPERPAGE,
   CARSBUNCHNBR,
@@ -20,20 +21,21 @@ import {
 import getWinnerName from '../../../shared/functions/function-get-winner-name';
 import deleteWinnerPopUp from '../../../shared/functions/function-delete-winner-popup';
 import showWinnerPopUp from '../../../shared/functions/function-show-winner-popup';
+import pageWinners from '../../winners/create-page-winners';
 
 function getRandomIntInclusive(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
 }
 
-function createSubPage(pageNbr: number): HTMLElement {
-  const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
-  const garageSubPageTitle = createDomElement(garageMainPageParams.subPageTitle);
-  garageSubPage.setAttribute('id', `page-${pageNbr}`);
-  if (pageNbr > 1) garageSubPage.classList.add('hidden');
-  garageSubPageTitle.innerText = `Page ${pageNbr}`;
-  garageSubPage.appendChild(garageSubPageTitle);
-  return garageSubPage;
-}
+// function createSubPage(pageNbr: number): HTMLElement {
+//   const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
+//   const garageSubPageTitle = createDomElement(garageMainPageParams.subPageTitle);
+//   garageSubPage.setAttribute('id', `page-${pageNbr}`);
+//   if (pageNbr > 1) garageSubPage.classList.add('hidden');
+//   garageSubPageTitle.innerText = `Page ${pageNbr}`;
+//   garageSubPage.appendChild(garageSubPageTitle);
+//   return garageSubPage;
+// }
 
 export default class Garage {
   garageContainer: HTMLElement;
@@ -119,7 +121,7 @@ export default class Garage {
     }
     await this.calculatePagesNbr();
     for (let j = 0; j < this.garagePagesNbr; j += 1) {
-      const garageSubPage = createSubPage(j + 1);
+      const garageSubPage = createSubPage(j + 1, garageMainPageParams);
       for (let i = 0; i < CARSPERPAGE; i += 1) {
         if (this.raceModulesSet[j * CARSPERPAGE + i]) {
           garageSubPage.appendChild(this.raceModulesSet[j * CARSPERPAGE + i].raceModContainer);
@@ -273,12 +275,14 @@ export default class Garage {
 
   buttonStartRaceHandler = async (): Promise<void> => {
     const resultsArr = await this.createArrRaceResult();
-    console.log('!!!!!!resultsArr = ', resultsArr);
     const winnerCompaund = await calculateWinner(resultsArr);
     let winnerName = await getWinnerName(winnerCompaund.winner);
     if (winnerName === '') winnerName = 'Nobody';
     showWinnerPopUp(winnerName, winnerCompaund.timeWinner);
     setTimeout(deleteWinnerPopUp, TIMEOUTWINNER);
+
+    // записать победителя в список победителей
+    pageWinners.updateWinnersTable(winnerCompaund);
   };
 
   listenTOGaragePage = async (): Promise<void> => {
