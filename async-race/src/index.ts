@@ -50,10 +50,12 @@ window.addEventListener('popstate', () => {
     pageWinners.winnersContainer.classList.add('hidden');
     const pageNbr = getCurrerntPageNbr();
     router.add(`garage/${pageNbr}`, navToSubPage(pageNbr, pageGarage));
+    pageGarage.pageNbrForReturn = getCurrerntPageNbr();
   } else {
     pageGarage.garageContainer.classList.add('hidden');
     pageWinners.winnersContainer.classList.remove('hidden');
     const pageNbr = getCurrerntPageNbr();
     router.add(`winners/${pageNbr}`, navToSubPage(pageNbr, pageWinners));
+    pageGarage.pageNbrForReturn = getCurrerntPageNbr();
   }
 });

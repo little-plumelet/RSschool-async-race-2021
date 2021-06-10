@@ -27,16 +27,6 @@ function getRandomIntInclusive(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
 }
 
-// function createSubPage(pageNbr: number): HTMLElement {
-//   const garageSubPage = createDomElement(garageMainPageParams.subPageContainer);
-//   const garageSubPageTitle = createDomElement(garageMainPageParams.subPageTitle);
-//   garageSubPage.setAttribute('id', `page-${pageNbr}`);
-//   if (pageNbr > 1) garageSubPage.classList.add('hidden');
-//   garageSubPageTitle.innerText = `Page ${pageNbr}`;
-//   garageSubPage.appendChild(garageSubPageTitle);
-//   return garageSubPage;
-// }
-
 export default class Garage {
   garageContainer: HTMLElement;
 
@@ -66,6 +56,8 @@ export default class Garage {
 
   pageName: string;
 
+  pageNbrForReturn: number;
+
   constructor() {
     this.garageCarManipulator = new CarManipulator();
     this.raceModulesSet = [];
@@ -73,6 +65,7 @@ export default class Garage {
     // назначаем параметры по умолчанию
     this.pageName = 'garage';
     this.garagePagesNbr = 1;
+    this.pageNbrForReturn = 1;
     this.garagePageTitleIndex = 1;
     this.garageCarsTotalNbr = 0;
 
@@ -212,6 +205,7 @@ export default class Garage {
 
   buttonNextHandler = async (): Promise<void> => {
     const pageNbr = getCurrerntPageNbr() + 1;
+    this.pageNbrForReturn = getCurrerntPageNbr();
     this.garagePagesContainer.childNodes.forEach((element) => {
       (element as HTMLElement).classList.add('hidden');
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
@@ -223,6 +217,7 @@ export default class Garage {
 
   buttonPrevHandler = async (): Promise<void> => {
     const pageNbr = getCurrerntPageNbr() - 1;
+    this.pageNbrForReturn = getCurrerntPageNbr();
     this.garagePagesContainer.childNodes.forEach((element) => {
       (element as HTMLElement).classList.add('hidden');
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {

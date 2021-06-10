@@ -25,10 +25,13 @@ export default class Winners {
 
   pageName: string;
 
+  pageNbrForReturn: number;
+
   constructor() {
     this.pageName = 'winners';
     this.winnersPagesNbr = 1;
     this.winnersTotalNbr = 0;
+    this.pageNbrForReturn = 1;
     this.setOfWinners = [];
     this.winnersContainer = createDomElement(winnersMainPageParams.container);
     this.winnersTitleBlock = createDomElement(winnersMainPageParams.titleContainer);
