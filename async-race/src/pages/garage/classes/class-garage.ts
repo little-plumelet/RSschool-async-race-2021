@@ -3,14 +3,23 @@ import CarManipulator from './class-car-manipulator';
 import garageMainPageParams from '../params/garage-page-main-container-params';
 import RaceModule from './class-race-module';
 import communicator from '../../../server-communication/create-communicator';
-import { CARSPERPAGE, CARSBUNCHNBR, INPUTCOLOR, HEXCOLORLETTERS } from '../../../shared/constants';
-import { Icar } from '../../../shared/interfaces-communicator';
+import { Icar, IraceResult } from '../../../shared/interfaces-communicator';
 import router from '../../../router/create-router';
 import getCurrerntPageNbr from '../../../shared/functions/function-get-current-page-number';
 import carNamesArr from '../../../shared/data-cars-names';
 import carModelsArr from '../../../shared/data-cars-models';
 import carColorArr from '../../../shared/data-cars-colors';
-import raceModuleParams from '../params/race-module-params';
+import calculateWinner from '../../../shared/functions/function-calculate-winner-of-race';
+import {
+  CARSPERPAGE,
+  CARSBUNCHNBR,
+  INPUTCOLOR,
+  HEXCOLORLETTERS,
+  TIMEOUTWINNER,
+} from '../../../shared/constants';
+import getWinnerName from '../../../shared/functions/function-get-winner-name';
+import deleteWinnerPopUp from '../../../shared/functions/function-delete-winner-popup';
+import showWinnerPopUp from '../../../shared/functions/function-show-winner-popup';
 
 function getRandomIntInclusive(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
@@ -223,7 +232,7 @@ export default class Garage {
   buttonCreateCarsHandler = async (): Promise<void> => {
     const cars = [{} as Icar];
 
-    for (let i = 0; i < 10; i += 1) {
+    for (let i = 0; i < CARSBUNCHNBR; i += 1) {
       const car = {} as Icar;
       car.name = carNamesArr[getRandomIntInclusive(0, carNamesArr.length - 1)];
       car.name = `${car.name} ${carModelsArr[getRandomIntInclusive(0, carModelsArr.length - 1)]}`;
@@ -236,6 +245,40 @@ export default class Garage {
     cars.splice(0, 1);
     cars.forEach(async (element) => { await this.updateSetOfModules(element); });
     this.renderPages();
+  };
+
+  createArrRaceResult = async (): Promise<IraceResult[]> => {
+    const currentPage = getCurrerntPageNbr();
+    console.log('currentPage = ', currentPage);
+    const cars = await communicator.getCars([{ key: '_page', value: currentPage }, { key: '_limit', value: 7 }]);
+    const resultsArr = [{} as IraceResult];
+    console.log('cars = ', cars);
+    await Promise.all(cars.map(async (element) => {
+      if (element.id) {
+        const commonRes = {} as IraceResult;
+        commonRes.id = element.id;
+        const res1 = await communicator.startORStopCarEngine([{ id: element.id, status: 'started' }]);
+        const res2 = await communicator.switchEngineDrive([{ id: element.id, status: 'drive' }]);
+        if (res2) {
+          commonRes.distance = res1.distance;
+          commonRes.velocity = res1.velocity;
+          commonRes.success = res2.success;
+          resultsArr.push(commonRes);
+        }
+      }
+    }));
+    resultsArr.splice(0, 1);
+    return resultsArr;
+  };
+
+  buttonStartRaceHandler = async (): Promise<void> => {
+    const resultsArr = await this.createArrRaceResult();
+    console.log('!!!!!!resultsArr = ', resultsArr);
+    const winnerCompaund = await calculateWinner(resultsArr);
+    let winnerName = await getWinnerName(winnerCompaund.winner);
+    if (winnerName === '') winnerName = 'Nobody';
+    showWinnerPopUp(winnerName, winnerCompaund.timeWinner);
+    setTimeout(deleteWinnerPopUp, TIMEOUTWINNER);
   };
 
   listenTOGaragePage = async (): Promise<void> => {
@@ -272,6 +315,10 @@ export default class Garage {
 
       if ((e.target as HTMLElement).classList.contains('manipulator-button_create-bunch')) {
         await this.buttonCreateCarsHandler();
+      }
+
+      if ((e.target as HTMLElement).classList.contains('manipulator-button_race')) {
+        await this.buttonStartRaceHandler();
       }
     });
   };

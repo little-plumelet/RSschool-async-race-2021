@@ -7,6 +7,7 @@ import {
   Iwinner,
   IwinnersQueryParams,
   IengineQueryParams,
+  IraceResult,
 } from '../shared/interfaces-communicator';
 
 export default class Communicator {
@@ -204,7 +205,7 @@ export default class Communicator {
     return '';
   };
 
-  startORStopCarEngine = async (queryParams: [IengineQueryParams]): Promise<Response> => {
+  startORStopCarEngine = async (queryParams: [IengineQueryParams]): Promise<IraceResult> => {
     let result;
     try {
       const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
@@ -215,14 +216,19 @@ export default class Communicator {
     return result;
   };
 
-  switchEngineDrive = async (queryParams: [IengineQueryParams]): Promise<Response> => {
+  switchEngineDrive = async (queryParams: [IengineQueryParams]): Promise<IraceResult> => {
     let result;
     try {
       const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
       errorHandler(response, SUCSESS);
       result = await response.json();
       console.log('EngineDriveResultDRIVE = ', result);
-    } catch (error) { printErrorMessage(error, 'switch engine'); }
+    } catch (error) {
+      printErrorMessage(error, 'switch engine');
+      result = {
+        success: 'false',
+      };
+    }
     return result;
   };
 }

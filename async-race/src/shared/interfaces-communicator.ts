@@ -46,6 +46,13 @@ interface IwinnersQueryParams {
   }
 }
 
+interface IraceResult {
+  success: 'true' | 'false',
+  id?: number,
+  velocity?: number,
+  distance?: number,
+}
+
 export {
   IsmallPathes,
   Icar,
@@ -53,4 +60,5 @@ export {
   IengineQueryParams,
   Iwinner,
   IwinnersQueryParams,
+  IraceResult,
 };

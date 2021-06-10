@@ -2,9 +2,10 @@ const CARSPERPAGE = 7;
 const WINNERSPERPAGE = 10;
 const ICONWINNERWIDTH = 64;
 const ICONWINNERHEIGHT = 34;
-const CARSBUNCHNBR = 100;
+const CARSBUNCHNBR = 10; // НЕ ЗАБУДЬ ЗАМЕНИТЬ на 100
 const HEXCOLORLETTERS = 6;
 const INPUTCOLOR = '#ffffff';
+const TIMEOUTWINNER = 5000;
 
 export {
   CARSPERPAGE,
@@ -14,4 +15,5 @@ export {
   CARSBUNCHNBR,
   INPUTCOLOR,
   HEXCOLORLETTERS,
+  TIMEOUTWINNER,
 };
