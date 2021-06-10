@@ -181,6 +181,7 @@ export default class Garage {
       const index = this.raceModulesSet.indexOf(module);
       this.raceModulesSet.splice(index, 1);
       this.renderPages();
+      pageWinners.removeWinner(id);
     }
   };
 

@@ -103,16 +103,12 @@ export default class Winners {
     let flagUpdated = false;
     const winsStartNbr = 1;
 
-    console.log('*********', this.setOfWinners);
-    console.log('*********', winnerCompaund);
-
     if (winnerCompaund.winner.id) {
       const winnerParam = {
         id: winnerCompaund.winner.id,
         wins: winsStartNbr,
         time: winnerCompaund.timeWinner,
       };
-
       this.setOfWinners.forEach((element) => {
         if (element.winnerId === winnerCompaund.winner.id) {
           if (element.bestTime < winnerCompaund.timeWinner) {
@@ -126,6 +122,22 @@ export default class Winners {
       else await communicator.createWinner(winnerParam);
       this.calculatePagesNbr();
       this.createPagesOfWinners();
+    }
+  };
+
+  removeWinner = async (id: number): Promise<void> => {
+    let winnerLine;
+    this.setOfWinners.forEach((element) => {
+      if (element.winnerId === id) {
+        winnerLine = element;
+      }
+    });
+    if (winnerLine) {
+      await communicator.deleteWinner(id);
+      const index = this.setOfWinners.indexOf(winnerLine);
+      this.setOfWinners.splice(index, 1);
+      console.log('88888', this.setOfWinners);
+      this.renderWinnersTable();
     }
   };
 }
