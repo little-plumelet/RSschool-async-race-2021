@@ -1,0 +1,22 @@
+.race-module {
+    width: 100%;
+    border-bottom: 2px dotted orange;
+}
+
+.track-module {
+    display: flex;
+    height: 65px;
+    overflow: hidden;
+}
+
+.track-move-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.track-way {
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+
+}

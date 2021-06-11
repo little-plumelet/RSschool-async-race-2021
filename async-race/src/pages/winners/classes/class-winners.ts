@@ -3,7 +3,9 @@ import winnersMainPageParams from '../params/winners-main-page-params';
 import createDomElement from '../../shared-functions/create-dom-element';
 import WinnerLine from './class-winner-line';
 import createSubPage from '../../shared-functions/create-sub-page';
-import { Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
+import getCurrerntPageNbr from '../../../shared/functions/function-get-current-page-number';
+import router from '../../../router/create-router';
+import { IwinnersQueryParams, Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
 import { WINNERSPERPAGE } from '../../../shared/constants';
 
 export default class Winners {
@@ -21,7 +23,13 @@ export default class Winners {
 
   winnersPagesContainer: HTMLElement;
 
+  winnersHeaderLine: HTMLElement;
+
   winnersPagesNbr: number;
+
+  winnersNextPageButton: HTMLElement;
+
+  winnersPrevPageButton: HTMLElement;
 
   pageName: string;
 
@@ -38,14 +46,20 @@ export default class Winners {
     this.winnersTitle = createDomElement(winnersMainPageParams.title);
     this.winnersTotalNbrEl = createDomElement(winnersMainPageParams.totalNbrWinners);
     this.winnersPagesContainer = createDomElement(winnersMainPageParams.subPagesContainer);
+    this.winnersHeaderLine = createDomElement(winnersMainPageParams.HeaderLine);
 
     this.createPagesOfWinners();
+    this.winnersNextPageButton = createDomElement(winnersMainPageParams.nextPageButton);
+    this.winnersPrevPageButton = createDomElement(winnersMainPageParams.prevPageButton);
 
     this.winnersTitleBlock.appendChild(this.winnersTitle);
     this.winnersTitleBlock.appendChild(this.winnersTotalNbrEl);
     this.winnersContainer.appendChild(this.winnersTitleBlock);
     this.winnersContainer.appendChild(this.winnersPagesContainer);
+    this.winnersContainer.appendChild(this.winnersPrevPageButton);
+    this.winnersContainer.appendChild(this.winnersNextPageButton);
     this.calculatePagesNbr();
+    this.listenTOWinnersPage();
   }
 
   getWinnersTotalNbr = async (): Promise<void> => {
@@ -60,9 +74,13 @@ export default class Winners {
     this.winnersPagesNbr = Math.ceil(communicator.countXCars / WINNERSPERPAGE);
   };
 
-  createSetOfWinnerLines = async (): Promise<void> => {
+  createSetOfWinnerLines = async (params: IwinnersQueryParams): Promise<void> => {
     const winnersArr: Iwinner[] = [];
-    const winners = await communicator.getWinners([{}, {}]);
+    let winners: Iwinner[];
+    if (params.sort && params.sortOrder) {
+      winners = await communicator.getWinners([{}, params]);
+    } else winners = await communicator.getWinners([{}, {}]);
+    console.log('1212121', winners);
     winners.forEach((element) => {
       if (element) winnersArr.push(element);
     });
@@ -81,12 +99,12 @@ export default class Winners {
     await this.calculatePagesNbr();
     for (let j = 0; j < this.winnersPagesNbr; j += 1) {
       const winnersSubPage = createSubPage(j + 1, winnersMainPageParams);
+      winnersSubPage.appendChild(this.winnersHeaderLine);
       for (let i = 0; i < WINNERSPERPAGE; i += 1) {
         if (this.setOfWinners[j * WINNERSPERPAGE + i]) {
           winnersSubPage.appendChild(this.setOfWinners[j * WINNERSPERPAGE + i].winnerLineContainer);
         }
       }
-      this.winnersPagesContainer.appendChild(winnersSubPage);
       this.winnersPagesContainer.appendChild(winnersSubPage);
     }
     await this.getWinnersTotalNbr();
@@ -95,7 +113,7 @@ export default class Winners {
 
   createPagesOfWinners = async (): Promise<void> => {
     await this.getWinnersTotalNbr();
-    await this.createSetOfWinnerLines();
+    await this.createSetOfWinnerLines({} as IwinnersQueryParams);
     this.renderWinnersTable();
   };
 
@@ -142,5 +160,60 @@ export default class Winners {
       console.log('88888', this.setOfWinners);
       this.renderWinnersTable();
     }
+  };
+
+  buttonNextHandler = async (): Promise<void> => {
+    const pageNbr = getCurrerntPageNbr() + 1;
+    this.pageNbrForReturn = getCurrerntPageNbr();
+    this.winnersPagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
+        (element as HTMLElement).classList.remove('hidden');
+        router.add(`winners/${pageNbr}`, () => {});
+      }
+    });
+  };
+
+  buttonPrevHandler = async (): Promise<void> => {
+    const pageNbr = getCurrerntPageNbr() - 1;
+    this.pageNbrForReturn = getCurrerntPageNbr();
+    this.winnersPagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
+        (element as HTMLElement).classList.remove('hidden');
+        router.add(`winners/${pageNbr}`, () => {});
+      }
+    });
+  };
+
+  sortByWinsNbr = async (order: string): Promise<void> => {
+    const sortParam = {
+      sort: {
+        key: '_sort',
+        value: 'wins',
+      },
+      sortOrder: {
+        key: '_order',
+        value: order,
+      },
+    } as IwinnersQueryParams;
+    await this.createSetOfWinnerLines(sortParam);
+  };
+
+  listenTOWinnersPage = async (): Promise<void> => {
+    this.winnersContainer.addEventListener('click', async (e): Promise<void> => {
+      if ((e.target as HTMLElement).classList.contains('winners-button_next')) {
+        await this.buttonNextHandler();
+      }
+
+      if ((e.target as HTMLElement).classList.contains('winners-button_prev')) {
+        await this.buttonPrevHandler();
+      }
+
+      if ((e.target as HTMLElement).classList.contains('winners-button_prev')) {
+        // await this.buttonPrevHandler();
+      }
+    });
+    // 'ASC' | 'DESC',
   };
 }

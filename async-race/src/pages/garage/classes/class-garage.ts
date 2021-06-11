@@ -247,7 +247,7 @@ export default class Garage {
 
   createArrRaceResult = async (): Promise<IraceResult[]> => {
     const currentPage = getCurrerntPageNbr();
-    console.log('currentPage = ', currentPage);
+    console.log('STARTcurrentPage = ', currentPage);
     const cars = await communicator.getCars([{ key: '_page', value: currentPage }, { key: '_limit', value: 7 }]);
     const resultsArr = [{} as IraceResult];
     console.log('cars = ', cars);

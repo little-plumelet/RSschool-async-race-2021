@@ -39,7 +39,7 @@ const raceModTrackParams = {
     finishPoint: {
       tegName: 'img',
       classNames: ['finish-point'],
-      attributes: [[]],
+      attributes: [['src', '../public/images/flag_finish_small.png'], ['alt', 'finish']],
     },
   },
 };
