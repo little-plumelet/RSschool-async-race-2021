@@ -192,8 +192,10 @@ export default class Garage {
 
   animationStart = async (
     id: number, target: HTMLElement, distance: number, velocity: number,
-  ): Promise<void> => {
-    const carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
+  ): Promise<IraceResult> => {
+    let carIcon;
+    if (target.classList.contains('car-icon')) carIcon = target;
+    else carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
     const start = Date.now();
     const startPoint = carIcon.getBoundingClientRect().left;
     const endPoint = window.innerWidth - startPoint - CARFINISHOFFSET;
@@ -204,6 +206,10 @@ export default class Garage {
     );
     const res = await communicator.switchEngineDrive([{ id, status: 'drive' }]);
     if (res.success === 'false') window.cancelAnimationFrame(animationId);
+    res.distance = distance;
+    res.velocity = velocity;
+    res.id = id;
+    return res;
   };
 
   buttonCreateHandler = async (): Promise<void> => {
@@ -305,18 +311,22 @@ export default class Garage {
     console.log('STARTcurrentPage = ', currentPage);
     const cars = await communicator.getCars([{ key: '_page', value: currentPage }, { key: '_limit', value: 7 }]);
     const resultsArr = [{} as IraceResult];
+    let raceSuccess: IraceResult;
     console.log('cars = ', cars);
+    console.log('results = ', resultsArr);
     await Promise.all(cars.map(async (element) => {
       if (element.id) {
         const commonRes = {} as IraceResult;
         commonRes.id = element.id;
-        const res1 = await communicator.startORStopCarEngine([{ id: element.id, status: 'started' }]);
-        const res2 = await communicator.switchEngineDrive([{ id: element.id, status: 'drive' }]);
-        if (res2) {
-          commonRes.distance = res1.distance;
-          commonRes.velocity = res1.velocity;
-          commonRes.success = res2.success;
-          resultsArr.push(commonRes);
+        const carRaceparams = await communicator.startORStopCarEngine([{ id: element.id, status: 'started' }]);
+        const carIcon = document.getElementById(`${element.id}`)?.lastElementChild?.lastElementChild?.firstElementChild as HTMLElement;
+        console.log('(((()))))', element.id, carIcon);
+        if (carRaceparams.velocity && carRaceparams.distance) {
+          raceSuccess = await this.animationStart(
+            element.id, carIcon, carRaceparams.distance, carRaceparams.velocity,
+          );
+          resultsArr.push(raceSuccess);
+          console.log('000000', raceSuccess, raceSuccess.id, raceSuccess.distance, raceSuccess.velocity);
         }
       }
     }));

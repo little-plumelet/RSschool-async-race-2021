@@ -224,8 +224,10 @@ export default class Communicator {
       errorHandler(response, SUCSESS);
       result = await response.json();
       console.log('EngineDriveResultDRIVE = ', result);
+      console.log('SUCCESS id = ', queryParams[0].id);
     } catch (error) {
       printErrorMessage(error, 'switch engine');
+      console.log('ERROR id = ', queryParams[0].id);
       result = {
         success: 'false',
       };

@@ -1,27 +1,33 @@
 import { IraceResult } from '../interfaces-communicator';
+import { MILICECINCEC } from '../constants';
 
 async function calculateWinner(resultsArr: IraceResult[]): Promise<{
   winner: IraceResult; timeWinner: number;
 }> {
+  console.log('CALCULATING', resultsArr);
   let winner = {} as IraceResult;
   let timeWinner = 0;
   let timeCurrent = 0;
+  // находим первого дошедшего до конца гонки
   for (let i = 0; i < resultsArr.length; i += 1) {
-    if (resultsArr[i].success) {
+    console.log('%%%%', resultsArr[i].success, typeof resultsArr[i].success);
+    if (resultsArr[i].success !== 'false') {
       winner = resultsArr[i];
+      console.log('CALCULATING FIRSTWINNER', winner);
       if (winner.distance && winner.velocity) timeWinner = winner.distance / winner.velocity;
       break;
     }
   }
+  // выбираем лучшего среди дошедших до конца
   for (let i = 0; i < resultsArr.length; i += 1) {
-    if (resultsArr[i].success) {
+    if (resultsArr[i].success !== 'false') {
       const tmp = resultsArr[i];
       if (tmp.distance && tmp.velocity) timeCurrent = tmp.distance / tmp.velocity;
       if (timeCurrent < timeWinner) winner = tmp;
     }
   }
   // if (winner) communicator.createWinner()
-  timeWinner = Math.round(timeWinner);
+  timeWinner = Math.round(timeWinner / MILICECINCEC);
   console.log('###winner#### = ', winner, timeWinner);
   return { winner, timeWinner };
 
