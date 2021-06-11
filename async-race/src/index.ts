@@ -59,3 +59,14 @@ window.addEventListener('popstate', () => {
     pageGarage.pageNbrForReturn = getCurrerntPageNbr();
   }
 });
+
+// let prev = performance.now();
+// let times = 0;
+
+// requestAnimationFrame(function measure(time) {
+//   document.body.insertAdjacentHTML('beforeEnd', Math.floor(time - prev) + ' ');
+//   prev = time;
+
+//   times += 1;
+//   if (times < 10) requestAnimationFrame(measure);
+// });

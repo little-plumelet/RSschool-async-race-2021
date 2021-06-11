@@ -6,6 +6,8 @@ const CARSBUNCHNBR = 10; // НЕ ЗАБУДЬ ЗАМЕНИТЬ на 100
 const HEXCOLORLETTERS = 6;
 const INPUTCOLOR = '#ffffff';
 const TIMEOUTWINNER = 5000;
+const ANIMATIONCOEFF = 3;
+const CARFINISHOFFSET = 238;
 
 export {
   CARSPERPAGE,
@@ -16,4 +18,6 @@ export {
   INPUTCOLOR,
   HEXCOLORLETTERS,
   TIMEOUTWINNER,
+  ANIMATIONCOEFF,
+  CARFINISHOFFSET,
 };

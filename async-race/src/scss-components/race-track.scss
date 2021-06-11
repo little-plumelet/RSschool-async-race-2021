@@ -18,5 +18,13 @@
     width: 95%;
     display: flex;
     justify-content: space-between;
+}
 
+.car-icon {
+    position: relative;
+}
+
+.finish-point {
+    padding-right: 100px;
+    z-index: 100;
 }
