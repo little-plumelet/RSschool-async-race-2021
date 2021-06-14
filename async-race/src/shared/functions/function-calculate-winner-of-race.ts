@@ -28,7 +28,7 @@ async function calculateWinner(resultsArr: IraceResult[]): Promise<{
   }
   // if (winner) communicator.createWinner()
   timeWinner = Math.round(timeWinner / MILICECINCEC);
-  console.log('###winner#### = ', winner, timeWinner);
+  console.log('###CALCULATING Real winner#### = ', winner, timeWinner);
   return { winner, timeWinner };
 
   // if (winner) {

@@ -13,6 +13,7 @@ export default class Header {
   constructor() {
     const nav = new Nav();
     this.header = document.createElement('header');
+    this.header.classList.add('header');
     this.navpanel = nav.nav;
 
     this.header.appendChild(this.navpanel);

@@ -47,7 +47,7 @@ interface IwinnersQueryParams {
 }
 
 interface IraceResult {
-  success: 'true' | 'false',
+  success: string, // 'true' | 'false'
   id?: number,
   velocity?: number,
   distance?: number,

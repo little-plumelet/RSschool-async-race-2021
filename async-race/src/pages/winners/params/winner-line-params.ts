@@ -1,26 +1,32 @@
 const winnerLineParams = {
+
   container: {
-    tegName: 'li',
+    tegName: 'tr',
     classNames: ['winner-line'],
     attributes: [[]],
   },
+  nbr: {
+    tegName: 'td',
+    classNames: ['winner-line-nbr'],
+    attributes: [[]],
+  },
   carName: {
-    tegName: 'span',
+    tegName: 'td',
     classNames: ['winner-line-name'],
     attributes: [[]],
   },
   wins: {
-    tegName: 'span',
+    tegName: 'td',
     classNames: ['winner-wins-number'],
     attributes: [[]],
   },
   time: {
-    tegName: 'span',
+    tegName: 'td',
     classNames: ['winner-best-time'],
     attributes: [[]],
   },
   carIcon: {
-    tegName: 'div',
+    tegName: 'td',
     classNames: ['winner-car-icon'],
     attributes: [[]],
   },

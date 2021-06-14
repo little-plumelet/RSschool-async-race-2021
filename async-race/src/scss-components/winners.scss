@@ -1,5 +1,56 @@
-// .winners-main-container{
-// }
+.winners-main-container{
+    width: 90vw;
+    margin: 0 auto;
+}
 .hidden {
     display: none;
 }
+
+.winners-title-container {
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 10px;
+
+    .winners-title { 
+        font-size: 30px;
+        color: orange;
+    }
+
+    .winners-cars-number {
+        color: white;
+        font-size: 20px;
+        margin-left: 20px;
+    }
+}
+
+.winners-subpage-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: white;
+}
+
+.winners-subpage-container {
+    width: 70%;
+}
+
+th {
+    background: orange;
+    text-align: center;
+    padding: 20px 0;
+    border-collapse: collapse;
+    font-size: 18px;
+   }
+
+td {
+    background: $dark_bgr; 
+    text-align: center;
+    border-bottom: 2px dotted orange;
+    border-collapse: collapse;
+    font-size: 18px;
+    color: white;
+   }
+
+.winner-nbr-header {
+    width: 70px;
+   }

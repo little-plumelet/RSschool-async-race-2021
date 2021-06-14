@@ -36,10 +36,21 @@ const raceModTrackParams = {
       classNames: ['car-icon'],
       attributes: [[]],
     },
+    finishPointContainer: {
+      tegName: 'div',
+      classNames: ['finish-point-container'],
+      attributes: [[]],
+    },
     finishPoint: {
       tegName: 'img',
       classNames: ['finish-point'],
       attributes: [['src', '../public/images/flag_finish_small.png'], ['alt', 'finish']],
+    },
+    velocityPoint: {
+      tegName: 'div',
+      classNames: ['car-velocity'],
+      attributes: [[]],
+      result: 'V = 0 m/c',
     },
   },
 };

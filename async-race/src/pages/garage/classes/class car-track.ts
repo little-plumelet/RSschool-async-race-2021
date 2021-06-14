@@ -7,16 +7,26 @@ export default class CarTrack {
 
   carIconContainer: HTMLElement;
 
+  finishPointContainer: HTMLElement;
+
   finishPoint: HTMLElement;
+
+  velosityPoint: HTMLElement;
 
   constructor(color: string) {
     this.container = createDomElement(raceModTrackParams.trackBlock.container);
     this.carIconContainer = createDomElement(raceModTrackParams.trackBlock.carIcon);
     this.createCarIcon(color);
+    this.finishPointContainer = createDomElement(
+      raceModTrackParams.trackBlock.finishPointContainer,
+    );
     this.finishPoint = createDomElement(raceModTrackParams.trackBlock.finishPoint);
+    this.velosityPoint = createDomElement(raceModTrackParams.trackBlock.velocityPoint);
 
     this.container.appendChild(this.carIconContainer);
-    this.container.appendChild(this.finishPoint);
+    this.container.appendChild(this.finishPointContainer);
+    this.finishPointContainer.appendChild(this.finishPoint);
+    this.finishPointContainer.appendChild(this.velosityPoint);
   }
 
   createCarIcon(color: string): void {

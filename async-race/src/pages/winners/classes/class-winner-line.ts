@@ -1,5 +1,4 @@
 import createDomElement from '../../shared-functions/create-dom-element';
-import IwinnerLine from '../interfaces/winner-line-interface';
 import winnerLineParams from '../params/winner-line-params';
 import { Iwinner } from '../../../shared/interfaces-communicator';
 import communicator from '../../../server-communication/create-communicator';
@@ -12,6 +11,8 @@ export default class WinnerLine {
   winnerId: number;
 
   carIconContainer: HTMLElement;
+
+  carNbrEl: HTMLElement;
 
   carName: string;
 
@@ -32,12 +33,14 @@ export default class WinnerLine {
     this.bestTime = param.time;
 
     this.winnerLineContainer = createDomElement(winnerLineParams.container);
+    this.carNbrEl = createDomElement(winnerLineParams.nbr);
     this.carIconContainer = createDomElement(winnerLineParams.carIcon);
     this.carNameEl = createDomElement(winnerLineParams.carName);
     this.winsNumberEl = createDomElement(winnerLineParams.wins);
     this.bestTimeEl = createDomElement(winnerLineParams.time);
     // this.numberEl = createDomElement();
 
+    this.winnerLineContainer.appendChild(this.carNbrEl);
     this.winnerLineContainer.appendChild(this.carIconContainer);
     this.winnerLineContainer.appendChild(this.carNameEl);
     this.winnerLineContainer.appendChild(this.winsNumberEl);

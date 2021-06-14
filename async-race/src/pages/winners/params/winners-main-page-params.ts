@@ -26,7 +26,7 @@ const winnersMainPageParams = {
     attributes: [[]],
   },
   subPageContainer: {
-    tegName: 'ol',
+    tegName: 'table',
     classNames: ['winners-subpage-container'],
     attributes: [[]],
   },
@@ -35,7 +35,7 @@ const winnersMainPageParams = {
     classNames: ['winners-subpage-title'],
     attributes: [[]],
   },
-  HeaderLine: {
+  HeaderLineContainer: {
     tegName: 'div',
     classNames: ['winner-line-header'],
     attributes: [[]],

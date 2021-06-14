@@ -1,5 +1,6 @@
 import './styles.scss';
 import header from './pages/create-header';
+import footer from './pages/create-footer';
 import pageGarage from './pages/garage/create-page-garage';
 import pageWinners from './pages/winners/create-page-winners';
 import communicator from './server-communication/create-communicator';
@@ -41,6 +42,7 @@ main();
 document.body.appendChild(header.header);
 document.body.appendChild(pageGarage.garageContainer);
 document.body.appendChild(pageWinners.winnersContainer);
+document.body.appendChild(footer.footer);
 router.add('garage/1', navToSubPage(1, pageGarage)); // страница при обновлениии
 
 window.addEventListener('popstate', () => {
@@ -59,6 +61,7 @@ window.addEventListener('popstate', () => {
     pageGarage.pageNbrForReturn = getCurrerntPageNbr();
   }
 });
+pageWinners.sortByWinsNbr('ASC');
 
 // let prev = performance.now();
 // let times = 0;

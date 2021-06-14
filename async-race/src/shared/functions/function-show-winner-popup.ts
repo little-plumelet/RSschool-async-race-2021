@@ -11,7 +11,8 @@ export default function showWinnerPopUp(name: string, time: number): void {
   text.classList.add('popup-winner-text');
 
   textName.innerText = `${name}`;
-  text.innerText += ` has won the race for ${time}sec!!!`;
+  if (name === 'nobody') text.innerText += ' has won the race!!!';
+  else text.innerText += ` has won the race for ${time}sec!!!`;
 
   content.appendChild(textName);
   content.appendChild(text);

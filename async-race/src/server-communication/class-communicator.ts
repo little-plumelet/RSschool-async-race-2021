@@ -32,7 +32,9 @@ export default class Communicator {
   // methods for garage
   private generateCarsQueryString = (queryParams: IcarsQueryParams[]): string => {
     if (queryParams.length) {
-      return `?${queryParams.map((x) => `${x.key}=${x.value}`).join('&')}`;
+      const res = `?${queryParams.map((x) => `${x.key}=${x.value}`).join('&')}`;
+      console.log('res!!!  ', res);
+      return res;
     }
     return '';
   };
@@ -223,13 +225,17 @@ export default class Communicator {
       const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
       errorHandler(response, SUCSESS);
       result = await response.json();
+      result = {
+        success: 'true',
+        id: queryParams[0].id,
+      };
       console.log('EngineDriveResultDRIVE = ', result);
-      console.log('SUCCESS id = ', queryParams[0].id);
     } catch (error) {
       printErrorMessage(error, 'switch engine');
       console.log('ERROR id = ', queryParams[0].id);
       result = {
         success: 'false',
+        id: queryParams[0].id,
       };
     }
     return result;

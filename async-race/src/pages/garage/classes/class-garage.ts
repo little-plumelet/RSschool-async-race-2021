@@ -23,24 +23,31 @@ import getWinnerName from '../../../shared/functions/function-get-winner-name';
 import deleteWinnerPopUp from '../../../shared/functions/function-delete-winner-popup';
 import showWinnerPopUp from '../../../shared/functions/function-show-winner-popup';
 import pageWinners from '../../winners/create-page-winners';
+import Ianimation from '../interfaces/animation-interface';
 
-let animationId: number;
+let animationId = [{} as Ianimation];
+const animationMod = {
+  carId: 0,
+  AnimationId: 0,
+};
 
 function getRandomIntInclusive(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
 }
 
 function carAnimation(
-  start: number, carIcon: HTMLElement, carOffset: number, endPoint: number,
+  id: number, start: number, carIcon: HTMLElement, carOffset: number, endPoint: number,
 ): VoidFunction {
   return function res(): void {
     const timePassed = Date.now() - start;
     const position = timePassed * carOffset;
     carIcon.setAttribute('style', `left: ${position}px`);
     if (position < endPoint) {
-      animationId = window.requestAnimationFrame(
-        carAnimation(start, carIcon, carOffset, endPoint),
+      animationMod.carId = id;
+      animationMod.AnimationId = window.requestAnimationFrame(
+        carAnimation(id, start, carIcon, carOffset, endPoint),
       );
+      animationId.push(animationMod);
     }
   };
 }
@@ -92,8 +99,6 @@ export default class Garage {
 
   pageNbrForReturn: number;
 
-  animationId: number;
-
   constructor() {
     this.garageCarManipulator = new CarManipulator();
     this.raceModulesSet = [];
@@ -104,7 +109,6 @@ export default class Garage {
     this.pageNbrForReturn = 1;
     this.garagePageTitleIndex = 1;
     this.garageCarsTotalNbr = 0;
-    this.animationId = 0;
 
     this.garageContainer = createDomElement(garageMainPageParams.container);
     this.garageCarManipulatorEl = this.garageCarManipulator.manipulatorContent;
@@ -201,14 +205,33 @@ export default class Garage {
     const endPoint = window.innerWidth - startPoint - CARFINISHOFFSET;
     const carOffset = endPoint / ((distance / velocity));
 
-    animationId = window.requestAnimationFrame(
-      carAnimation(start, carIcon, carOffset, endPoint),
+    animationMod.carId = id;
+    animationMod.AnimationId = window.requestAnimationFrame(
+      carAnimation(id, start, carIcon, carOffset, endPoint),
     );
+
+    // const rrr = window.requestAnimationFrame(
+    //   carAnimation(start, carIcon, carOffset, endPoint),
+    // );
+    animationId.push(animationMod);
+    console.log('!!!!all ID', animationId);
     const res = await communicator.switchEngineDrive([{ id, status: 'drive' }]);
-    if (res.success === 'false') window.cancelAnimationFrame(animationId);
+    if (res.success === 'false') {
+      console.log('yyyy', id, res.id);
+      // for (let i = 0; i < animationId.length; i += 1) {
+        // console.log('++++all ID', animationId, res.id);
+        if (animationMod.carId === res.id) {
+          // window.cancelAnimationFrame(animationId[i].AnimationId);
+          window.cancelAnimationFrame(animationMod.AnimationId);
+          console.log('--- ID', animationMod.AnimationId, animationMod.carId, res.id);
+          // console.log('--- ID', animationId[i], res.id);
+        }
+      // }
+      
+      // res.id = id;
+    }
     res.distance = distance;
     res.velocity = velocity;
-    res.id = id;
     return res;
   };
 
@@ -262,6 +285,7 @@ export default class Garage {
     if (carRaceparams.velocity && carRaceparams.distance) {
       this.animationStart(id, target, carRaceparams.distance, carRaceparams.velocity);
     }
+    // animationId = [{} as Ianimation];
   };
 
   buttonNextHandler = async (): Promise<void> => {
@@ -320,6 +344,7 @@ export default class Garage {
         commonRes.id = element.id;
         const carRaceparams = await communicator.startORStopCarEngine([{ id: element.id, status: 'started' }]);
         const carIcon = document.getElementById(`${element.id}`)?.lastElementChild?.lastElementChild?.firstElementChild as HTMLElement;
+        (document.getElementById(`${element.id}`)?.lastElementChild?.lastElementChild?.firstElementChild?.nextSibling?.lastChild as HTMLElement).innerText = `V = ${carRaceparams.velocity} m/c`;
         console.log('(((()))))', element.id, carIcon);
         if (carRaceparams.velocity && carRaceparams.distance) {
           raceSuccess = await this.animationStart(
@@ -331,6 +356,7 @@ export default class Garage {
       }
     }));
     resultsArr.splice(0, 1);
+    animationId = [{} as Ianimation];
     return resultsArr;
   };
 
@@ -339,6 +365,7 @@ export default class Garage {
     const winnerCompaund = await calculateWinner(resultsArr);
     let winnerName = await getWinnerName(winnerCompaund.winner);
     if (winnerName === '') winnerName = 'Nobody';
+    animationId = [{} as Ianimation];
     showWinnerPopUp(winnerName, winnerCompaund.timeWinner);
     setTimeout(deleteWinnerPopUp, TIMEOUTWINNER);
 

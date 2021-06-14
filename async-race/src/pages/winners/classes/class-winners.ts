@@ -7,6 +7,28 @@ import getCurrerntPageNbr from '../../../shared/functions/function-get-current-p
 import router from '../../../router/create-router';
 import { IwinnersQueryParams, Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
 import { WINNERSPERPAGE } from '../../../shared/constants';
+import headerWinnerLineParams from '../params/header-winner-line-params';
+import HeaderWinnerLine from './class-header-winner-line';
+import winnerLineParams from '../params/winner-line-params';
+
+function winsSort(winners: Iwinner[], order: string): Iwinner[] {
+  const res = [];
+  if (order === 'ASC') {
+    while (winners.length) {
+      const min = winners[0].wins;
+      let j = 0;
+      for (let i = 1; i < winners.length; i += 1) {
+        if (min > winners[i].wins) {
+          j = i;
+          break;
+        }
+      }
+      res.push(winners[j]);
+      winners.splice(j, 1);
+    }
+  }
+  return res;
+}
 
 export default class Winners {
   winnersContainer: HTMLElement;
@@ -46,7 +68,7 @@ export default class Winners {
     this.winnersTitle = createDomElement(winnersMainPageParams.title);
     this.winnersTotalNbrEl = createDomElement(winnersMainPageParams.totalNbrWinners);
     this.winnersPagesContainer = createDomElement(winnersMainPageParams.subPagesContainer);
-    this.winnersHeaderLine = createDomElement(winnersMainPageParams.HeaderLine);
+    this.winnersHeaderLine = new HeaderWinnerLine().winnerLineContainer;
 
     this.createPagesOfWinners();
     this.winnersNextPageButton = createDomElement(winnersMainPageParams.nextPageButton);
@@ -76,20 +98,20 @@ export default class Winners {
 
   createSetOfWinnerLines = async (params: IwinnersQueryParams): Promise<void> => {
     const winnersArr: Iwinner[] = [];
-    let winners: Iwinner[];
-    if (params.sort && params.sortOrder) {
-      winners = await communicator.getWinners([{}, params]);
-    } else winners = await communicator.getWinners([{}, {}]);
-    console.log('1212121', winners);
+    let winners = await communicator.getWinners([{}, {}]);
+    if (params.sort?.value === 'wins' && params.sortOrder?.value) {
+      winners = winsSort(winners, params.sortOrder.value);
+    }
+    console.log('++++', winners);
     winners.forEach((element) => {
       if (element) winnersArr.push(element);
     });
-    console.log('WWWWARR', winnersArr);
     this.setOfWinners = [];
     winnersArr.forEach((element) => {
       const winnerLine = new WinnerLine(element);
       this.setOfWinners.push(winnerLine);
     });
+    console.log('$$$$$$', winners);
   };
 
   renderWinnersTable = async (): Promise<void> => {
@@ -102,6 +124,7 @@ export default class Winners {
       winnersSubPage.appendChild(this.winnersHeaderLine);
       for (let i = 0; i < WINNERSPERPAGE; i += 1) {
         if (this.setOfWinners[j * WINNERSPERPAGE + i]) {
+          (this.setOfWinners[j * WINNERSPERPAGE + i]).carNbrEl.innerText = `${i + 1}`;
           winnersSubPage.appendChild(this.setOfWinners[j * WINNERSPERPAGE + i].winnerLineContainer);
         }
       }
@@ -113,7 +136,7 @@ export default class Winners {
 
   createPagesOfWinners = async (): Promise<void> => {
     await this.getWinnersTotalNbr();
-    await this.createSetOfWinnerLines({} as IwinnersQueryParams);
+    await this.createSetOfWinnerLines({});
     this.renderWinnersTable();
   };
 
@@ -187,7 +210,7 @@ export default class Winners {
   };
 
   sortByWinsNbr = async (order: string): Promise<void> => {
-    const sortParam = {
+    const params = {
       sort: {
         key: '_sort',
         value: 'wins',
@@ -197,7 +220,8 @@ export default class Winners {
         value: order,
       },
     } as IwinnersQueryParams;
-    await this.createSetOfWinnerLines(sortParam);
+    this.createSetOfWinnerLines(params);
+    this.renderWinnersTable();
   };
 
   listenTOWinnersPage = async (): Promise<void> => {

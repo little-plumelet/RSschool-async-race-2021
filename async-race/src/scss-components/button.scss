@@ -1,0 +1,49 @@
+.manipulator-button,
+.car-control-button,
+.garage-button,
+.winners-button {
+    min-width: 120px;
+    margin: 5px;
+    padding: 3px 10px;
+    border-radius: 7px;
+    border-color: $orange_btn;
+    font-size: 13px;
+    color: black;
+    background-color: $dark_bgr;
+    box-shadow: 0 0 40px 40px $orange-light_btn inset, 0 0 0 0 $orange_btn;
+    transition: all 150ms ease-in-out;
+    outline: none;
+    appearance: none;
+    &:hover {
+        cursor: pointer;
+        color: white;
+        box-shadow: 0 0 10px 0 $orange_btn inset, 0 0 5px 2px $orange_btn;
+    }
+  }
+
+  .manipulator-button_race,
+  .manipulator-button_reset {
+    box-shadow: 0 0 40px 40px $orange-light_btn inset, 0 0 0 0 $orange_btn;
+  }
+
+  .move-control-button {
+    min-width: 20px;
+    padding: 3px 5px;
+    margin-bottom: 2px;
+    margin-left: 5px;
+    border-radius: 7px;
+    border-color: $orange_btn;
+    background-color: $dark_bgr;
+    color: white;
+    &:hover {
+        cursor: pointer;
+        color: white;
+        box-shadow: 0 0 10px 0 $orange_btn inset, 0 0 5px 2px $orange_btn;
+    }
+  }
+
+  .garage-button,
+  .winners-button {
+      margin-top: 50px;
+      box-shadow: 0 0 40px 40px $orange-light_btn inset, 0 0 0 0 $orange_btn;
+  }
