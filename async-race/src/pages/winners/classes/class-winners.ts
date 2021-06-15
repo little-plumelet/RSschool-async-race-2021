@@ -136,6 +136,7 @@ export default class Winners {
   calculatePagesNbr = async (): Promise<void> => {
     await communicator.getCars([{}, { key: '_limit', value: 10 }]); // нет ясности как пользоваться данным параметром правильно
     this.winnersPagesNbr = Math.ceil(communicator.countXWinners / WINNERSPERPAGE);
+    if (this.winnersPagesNbr <= 0) this.winnersPagesNbr = 1;
   };
 
   createSetOfWinnerLines = async (): Promise<void> => {
@@ -178,7 +179,7 @@ export default class Winners {
   createPagesOfWinners = async (): Promise<void> => {
     await this.getWinnersTotalNbr();
     await this.createSetOfWinnerLines();
-    this.renderWinnersTable();
+    await this.renderWinnersTable();
   };
 
   updateWinnersTable = async (winnerCompaund: {
@@ -221,7 +222,7 @@ export default class Winners {
       await communicator.deleteWinner(id);
       const index = this.setOfWinners.indexOf(winnerLine);
       this.setOfWinners.splice(index, 1);
-      this.renderWinnersTable();
+      await this.renderWinnersTable();
     }
   };
 

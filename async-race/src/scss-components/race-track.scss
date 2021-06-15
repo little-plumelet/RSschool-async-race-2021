@@ -1,45 +1,57 @@
 .race-module {
-    width: 100%;
-    border-bottom: 2px dotted white;
+  width: 100%;
+  border-bottom: 2px dotted white;
 }
 
 .track-module {
-    display: flex;
-    height: 60px;
-    overflow: hidden;
+  display: flex;
+  height: 60px;
+  overflow: hidden;
 }
 
 .track-move-control {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .track-way {
-    width: 95%;
-    display: flex;
-    justify-content: space-between;
+  width: 95%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .car-icon {
-    position: relative;
+  position: relative;
 }
 
 .finish-point-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    // padding-right: 100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  // padding-right: 100px;
 }
 
 .finish-point {
-    z-index: 100;
-    padding-right: 130px;
+  z-index: 100;
+  padding-right: 130px;
 }
 
 .car-velocity {
-    color: white;
-    font-size: 12px;
-    position: absolute;
-    left: 20%;
-    top: 0%;
+  color: white;
+  font-size: 12px;
+  position: absolute;
+  left: 20%;
+  top: 0%;
+}
+
+@media screen and (min-width: 500px) and (max-width: 960px) {
+
+  .track-module {
+    height: 55px;
+  }
+
+  .finish-point {
+    height: 40px;
+    padding-right: 100px;
+  }
 }

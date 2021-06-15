@@ -59,10 +59,45 @@ td {
   font-size: 18px;
   color: white;
 }
+
 .winner-wins-number-header,
 .winner-best-time-header {
   cursor: pointer;
 }
 .winner-nbr-header {
   width: 70px;
+}
+
+@media screen and (min-width: 500px) and (max-width: 960px) {
+  .winners-subpage-container {
+    width: 100%;
+}
+  .winners-title-container {
+    margin-top: 20px;
+  
+    .winners-title {
+      font-size: 20px;
+    }
+  
+    .winners-number {
+      font-size: 10px;
+    }
+  }
+
+  .winners-subpage-title {
+    font-size: 13px;
+  }
+
+  th {
+    font-size: 13px;
+  
+    .arrow {
+      width: 15px;
+      height: 20px;
+    }
+  }
+  
+  td {
+    font-size: 13px;
+  }
 }

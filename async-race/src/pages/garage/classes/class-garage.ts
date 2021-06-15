@@ -32,10 +32,6 @@ import {
 } from '../function-utils';
 
 let animationId = [{} as Ianimation];
-// const animationMod = {
-//   carId: 0,
-//   AnimationId: 0,
-// };
 
 function carAnimation(
   id: number, start: number, carIcon: HTMLElement, carOffset: number, endPoint: number,
@@ -54,7 +50,6 @@ function carAnimation(
       animationMod.AnimationId = window.requestAnimationFrame(
         carAnimation(id, start, carIcon, carOffset, endPoint),
       );
-      // console.log('rrrrrrr', animationMod.AnimationId);
       animationId.forEach((el) => {
         if (el.carId === animationMod.carId) {
           const i = animationId.indexOf(el);
@@ -194,16 +189,30 @@ export default class Garage {
     this.renderPages();
   };
 
+  stayOntheCurrentPage(currentPage: number): void {
+    this.garagePagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${currentPage}`) {
+        (element as HTMLElement).classList.remove('hidden');
+        router.add(`garage/${currentPage}`, () => {});
+      }
+    });
+  }
+
   animationStart = async (
     id: number, target: HTMLElement, distance: number, velocity: number,
   ): Promise<IraceResult> => {
     let carIcon;
-    // let isPushNeeded = true;
     if (target.classList.contains('car-icon')) carIcon = target;
     else carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
+
     const start = Date.now();
     const startPoint = carIcon.getBoundingClientRect().left;
-    const endPoint = window.innerWidth - startPoint - CARFINISHOFFSET;
+    const halfCarIconWidth = carIcon.getBoundingClientRect().right - startPoint;
+    console.log('start.point =', startPoint, window.innerWidth, halfCarIconWidth);
+
+    const endPoint = window.innerWidth - halfCarIconWidth * 1.3 - CARFINISHOFFSET;
+    console.log('end.point =', endPoint);
     const carOffset = endPoint / ((distance / velocity));
 
     const animationMod = {
@@ -232,15 +241,18 @@ export default class Garage {
 
   buttonCreateHandler = async (): Promise<void> => {
     const car = {} as Icar;
+    const currentPage = getCurrerntPageNbr();
 
     car.color = (this.garageCarManipulator.createCarBlock.carColorInput as HTMLInputElement).value;
     car.name = (this.garageCarManipulator.createCarBlock.carNameInput as HTMLInputElement).value;
     await this.updateSetOfModules(car);
-    this.renderPages();
+    await this.renderPages();
+    this.stayOntheCurrentPage(currentPage);
   };
 
   buttonRemoveHandler = async (target: HTMLElement): Promise<void> => {
     let module;
+    const currentPage = getCurrerntPageNbr();
     const id = Number((target as HTMLElement).parentElement?.parentElement?.getAttribute('id'));
     const deletedCar = await communicator.getCar(id);
     await communicator.deleteCar(id);
@@ -250,9 +262,10 @@ export default class Garage {
     if (module) {
       const index = this.raceModulesSet.indexOf(module);
       this.raceModulesSet.splice(index, 1);
-      this.renderPages();
-      pageWinners.removeWinner(id);
+      await this.renderPages();
+      await pageWinners.removeWinner(id);
     }
+    this.stayOntheCurrentPage(currentPage);
   };
 
   buttonSelectHandler = async (target: HTMLElement): Promise<number> => {
@@ -340,6 +353,7 @@ export default class Garage {
 
   buttonCreateCarsHandler = async (): Promise<void> => {
     const cars = [{} as Icar];
+    const currentPage = getCurrerntPageNbr();
 
     for (let i = 0; i < CARSBUNCHNBR; i += 1) {
       const car = {} as Icar;
@@ -352,8 +366,9 @@ export default class Garage {
       cars.push(car);
     }
     cars.splice(0, 1);
-    cars.forEach(async (element) => { await this.updateSetOfModules(element); });
-    this.renderPages();
+    await Promise.all(cars.map(async (element) => { await this.updateSetOfModules(element); }));
+    await this.renderPages();
+    this.stayOntheCurrentPage(currentPage);
   };
 
   createArrRaceResult = async (): Promise<IraceResult[]> => {
@@ -390,6 +405,7 @@ export default class Garage {
     const makeDisabled = true;
     target.classList.add('disabled');
     disableToggleStartButtons(makeDisabled);
+    this.garageCarManipulator.buttonsBlock.buttonReset.classList.add('disabled');
     const resultsArr = await this.createArrRaceResult();
     const winnerCompaund = await calculateWinner(resultsArr);
     let winnerName = await getWinnerName(winnerCompaund.winner);
@@ -399,7 +415,9 @@ export default class Garage {
     setTimeout(deleteWinnerPopUp, TIMEOUTWINNER);
 
     // записать победителя в список победителей
-    if (winnerName !== 'Nobody') pageWinners.updateWinnersTable(winnerCompaund);
+    if (winnerName !== 'Nobody') await pageWinners.updateWinnersTable(winnerCompaund);
+    pageWinners.renderWinnersTable();
+    this.garageCarManipulator.buttonsBlock.buttonReset.classList.remove('disabled');
   };
 
   buttonResetRaceHandler = async (): Promise<void> => {
@@ -444,10 +462,6 @@ export default class Garage {
 
       if ((e.target as HTMLElement).classList.contains('garage-button_prev')) {
         await this.buttonPrevHandler();
-      }
-
-      if ((e.target as HTMLElement).classList.contains('manipulator-button_create-bunch')) {
-        await this.buttonCreateCarsHandler();
       }
 
       if ((e.target as HTMLElement).classList.contains('manipulator-button_create-bunch')) {

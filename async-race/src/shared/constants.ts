@@ -2,13 +2,13 @@ const CARSPERPAGE = 7;
 const WINNERSPERPAGE = 10;
 const ICONWINNERWIDTH = 64;
 const ICONWINNERHEIGHT = 34;
-const CARSBUNCHNBR = 10; // НЕ ЗАБУДЬ ЗАМЕНИТЬ на 100
+const CARSBUNCHNBR = 100; // НЕ ЗАБУДЬ ЗАМЕНИТЬ на 100
 const HEXCOLORLETTERS = 6;
 const INPUTCOLOR = '#ffffff';
 const MILICECINCEC = 1000;
 const TIMEOUTWINNER = 5000;
 const ANIMATIONCOEFF = 3;
-const CARFINISHOFFSET = 238;
+const CARFINISHOFFSET = window.innerWidth * 0.1;
 
 export {
   CARSPERPAGE,
@@ -21,5 +21,5 @@ export {
   TIMEOUTWINNER,
   ANIMATIONCOEFF,
   CARFINISHOFFSET,
-  MILICECINCEC
+  MILICECINCEC,
 };
