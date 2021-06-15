@@ -263,9 +263,7 @@ export default class Winners {
       await this.sortWinners('wins', 'DISC');
       const winsHeaders = document.querySelectorAll('.winner-wins-number-header');
       const arrows = document.querySelectorAll('.arrows');
-      arrows.forEach((el) => {
-        el.classList.add('arrow-hidden');
-      });
+      arrows.forEach((el) => { el.classList.add('arrow-hidden'); });
       winsHeaders.forEach((el) => {
         el?.classList.remove('ascended');
         el?.classList.add('discended');
@@ -275,9 +273,7 @@ export default class Winners {
       await this.sortWinners('wins', 'ASC');
       const winsHeaders = document.querySelectorAll('.winner-wins-number-header');
       const arrows = document.querySelectorAll('.arrows');
-      arrows.forEach((el) => {
-        el.classList.add('arrow-hidden');
-      });
+      arrows.forEach((el) => { el.classList.add('arrow-hidden'); });
       winsHeaders.forEach((el) => {
         el?.classList.add('ascended');
         el?.classList.remove('discended');
@@ -305,9 +301,7 @@ export default class Winners {
       await this.sortWinners('time', 'DISC');
       const timeHeaders = document.querySelectorAll('.winner-best-time-header');
       const arrows = document.querySelectorAll('.arrows');
-      arrows.forEach((el) => {
-        el.classList.add('arrow-hidden');
-      });
+      arrows.forEach((el) => { el.classList.add('arrow-hidden'); });
       timeHeaders.forEach((el) => {
         el?.classList.remove('ascended');
         el?.classList.add('discended');
@@ -317,9 +311,7 @@ export default class Winners {
       await this.sortWinners('time', 'ASC');
       const timeHeaders = document.querySelectorAll('.winner-best-time-header');
       const arrows = document.querySelectorAll('.arrows');
-      arrows.forEach((el) => {
-        el.classList.add('arrow-hidden');
-      });
+      arrows.forEach((el) => { el.classList.add('arrow-hidden'); });
       timeHeaders.forEach((el) => {
         el?.classList.add('ascended');
         el?.classList.remove('discended');
