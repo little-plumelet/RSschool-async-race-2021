@@ -18,15 +18,25 @@ const headerWinnerLineParams = {
   },
   wins: {
     tegName: 'th',
-    classNames: ['winner-wins-number-header'],
+    classNames: ['winner-wins-number-header', 'ascended'],
     attributes: [[]],
     result: 'Wins',
   },
   time: {
     tegName: 'th',
-    classNames: ['winner-best-time-header'],
+    classNames: ['winner-best-time-header', 'ascended'],
     attributes: [[]],
     result: 'Best Time(sec)',
+  },
+  ArrowUp: {
+    tegName: 'img',
+    classNames: ['arrow', 'arrow-hidden', 'arrow-up'],
+    attributes: [['src', './public/images/arrow_up.png']],
+  },
+  ArrowDown: {
+    tegName: 'img',
+    classNames: ['arrow', 'arrow-hidden', 'arrow-down'],
+    attributes: [['src', './public/images/arrow_down.png']],
   },
   carIcon: {
     tegName: 'th',

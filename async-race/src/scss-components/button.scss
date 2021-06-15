@@ -44,6 +44,7 @@
 
   .garage-button,
   .winners-button {
+      cursor: pointer;
       margin-top: 50px;
       box-shadow: 0 0 40px 40px $orange-light_btn inset, 0 0 0 0 $orange_btn;
   }

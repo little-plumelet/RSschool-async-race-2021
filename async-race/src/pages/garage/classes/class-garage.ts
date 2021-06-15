@@ -19,7 +19,6 @@ import Ianimation from '../interfaces/animation-interface';
 import {
   CARSPERPAGE,
   CARSBUNCHNBR,
-  INPUTCOLOR,
   HEXCOLORLETTERS,
   TIMEOUTWINNER,
   CARFINISHOFFSET,
@@ -388,10 +387,10 @@ export default class Garage {
     setTimeout(deleteWinnerPopUp, TIMEOUTWINNER);
 
     // записать победителя в список победителей
-    pageWinners.updateWinnersTable(winnerCompaund);
+    if (winnerName !== 'Nobody') pageWinners.updateWinnersTable(winnerCompaund);
   };
 
-  buttonResetRaceHandler = async (target: HTMLElement): Promise<void> => {
+  buttonResetRaceHandler = async (): Promise<void> => {
     const makeDisabled = false;
     this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
     disableToggleStartButtons(makeDisabled);
@@ -448,7 +447,7 @@ export default class Garage {
       }
 
       if ((e.target as HTMLElement).classList.contains('manipulator-button_reset')) {
-        await this.buttonResetRaceHandler(e.target as HTMLElement);
+        await this.buttonResetRaceHandler();
       }
     });
   };

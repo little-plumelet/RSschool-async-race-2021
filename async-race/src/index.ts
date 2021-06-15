@@ -66,8 +66,6 @@ window.addEventListener('popstate', () => {
     pageGarage.pageNbrForReturn = getCurrerntPageNbr();
     if ((pageNbr) === pageWinners.winnersPagesNbr) pageWinners.winnersNextPageButton.classList.add('disabled');
     pageGarage.garagePrevPageButton.classList.add('disabled');
-    if ((pageNbr) === 1) pageWinners.winnersPrevPageButton.classList.add('disabled'); 
+    if ((pageNbr) === 1) pageWinners.winnersPrevPageButton.classList.add('disabled');
   }
 });
-
-pageWinners.sortByWinsNbr('ASC');

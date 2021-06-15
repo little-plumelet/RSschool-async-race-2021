@@ -5,22 +5,67 @@ import WinnerLine from './class-winner-line';
 import createSubPage from '../../shared-functions/create-sub-page';
 import getCurrerntPageNbr from '../../../shared/functions/function-get-current-page-number';
 import router from '../../../router/create-router';
-import { IwinnersQueryParams, Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
+import { Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
 import { WINNERSPERPAGE } from '../../../shared/constants';
-import headerWinnerLineParams from '../params/header-winner-line-params';
 import HeaderWinnerLine from './class-header-winner-line';
-import winnerLineParams from '../params/winner-line-params';
 
-function winsSort(winners: Iwinner[], order: string): Iwinner[] {
+function winsSort(winners: WinnerLine[], order: string): WinnerLine[] {
   const res = [];
+
   if (order === 'ASC') {
     while (winners.length) {
-      const min = winners[0].wins;
+      let min = winners[0].winsNumber;
       let j = 0;
       for (let i = 1; i < winners.length; i += 1) {
-        if (min > winners[i].wins) {
+        if (min > winners[i].winsNumber) {
           j = i;
-          break;
+          min = winners[i].winsNumber;
+        }
+      }
+      res.push(winners[j]);
+      winners.splice(j, 1);
+    }
+  } else if (order === 'DISC') {
+    while (winners.length) {
+      let max = winners[0].winsNumber;
+      let j = 0;
+      for (let i = 1; i < winners.length; i += 1) {
+        if (max < winners[i].winsNumber) {
+          j = i;
+          max = winners[i].winsNumber;
+        }
+      }
+      res.push(winners[j]);
+      winners.splice(j, 1);
+    }
+  }
+  return res;
+}
+
+function timeSort(winners: WinnerLine[], order: string): WinnerLine[] {
+  const res = [];
+
+  if (order === 'ASC') {
+    while (winners.length) {
+      let min = winners[0].bestTime;
+      let j = 0;
+      for (let i = 1; i < winners.length; i += 1) {
+        if (min > winners[i].bestTime) {
+          j = i;
+          min = winners[i].bestTime;
+        }
+      }
+      res.push(winners[j]);
+      winners.splice(j, 1);
+    }
+  } else if (order === 'DISC') {
+    while (winners.length) {
+      let max = winners[0].bestTime;
+      let j = 0;
+      for (let i = 1; i < winners.length; i += 1) {
+        if (max < winners[i].bestTime) {
+          j = i;
+          max = winners[i].bestTime;
         }
       }
       res.push(winners[j]);
@@ -93,12 +138,9 @@ export default class Winners {
     this.winnersPagesNbr = Math.ceil(communicator.countXWinners / WINNERSPERPAGE);
   };
 
-  createSetOfWinnerLines = async (params: IwinnersQueryParams): Promise<void> => {
+  createSetOfWinnerLines = async (): Promise<void> => {
     const winnersArr: Iwinner[] = [];
-    let winners = await communicator.getWinners([{}, {}]);
-    if (params.sort?.value === 'wins' && params.sortOrder?.value) {
-      winners = winsSort(winners, params.sortOrder.value);
-    }
+    const winners = await communicator.getWinners([{}, {}]);
     console.log('++++', winners);
     winners.forEach((element) => {
       if (element) winnersArr.push(element);
@@ -135,7 +177,7 @@ export default class Winners {
 
   createPagesOfWinners = async (): Promise<void> => {
     await this.getWinnersTotalNbr();
-    await this.createSetOfWinnerLines({});
+    await this.createSetOfWinnerLines();
     this.renderWinnersTable();
   };
 
@@ -179,7 +221,6 @@ export default class Winners {
       await communicator.deleteWinner(id);
       const index = this.setOfWinners.indexOf(winnerLine);
       this.setOfWinners.splice(index, 1);
-      console.log('88888', this.setOfWinners);
       this.renderWinnersTable();
     }
   };
@@ -213,19 +254,94 @@ export default class Winners {
     });
   };
 
-  sortByWinsNbr = async (order: string): Promise<void> => {
-    const params = {
-      sort: {
-        key: '_sort',
-        value: 'wins',
-      },
-      sortOrder: {
-        key: '_order',
-        value: order,
-      },
-    } as IwinnersQueryParams;
-    this.createSetOfWinnerLines(params);
-    this.renderWinnersTable();
+  sortWinners = async (mode: string, order: string): Promise<void> => {
+    if (mode === 'wins') this.setOfWinners = winsSort(this.setOfWinners, order);
+    else if (mode === 'time') this.setOfWinners = timeSort(this.setOfWinners, order);
+    await this.renderWinnersTable();
+  };
+
+  winsHeaderHandler = async (target: HTMLElement): Promise<void> => {
+    const pageNbr = getCurrerntPageNbr();
+    if ((target as HTMLElement).classList.contains('ascended')) {
+      await this.sortWinners('wins', 'DISC');
+      const winsHeaders = document.querySelectorAll('.winner-wins-number-header');
+      const arrows = document.querySelectorAll('.arrows');
+      arrows.forEach((el) => {
+        el.classList.add('arrow-hidden');
+      });
+      winsHeaders.forEach((el) => {
+        el?.classList.remove('ascended');
+        el?.classList.add('discended');
+        (el?.lastChild as HTMLElement).classList.remove('arrow-hidden');
+      });
+    } else {
+      await this.sortWinners('wins', 'ASC');
+      const winsHeaders = document.querySelectorAll('.winner-wins-number-header');
+      const arrows = document.querySelectorAll('.arrows');
+      arrows.forEach((el) => {
+        el.classList.add('arrow-hidden');
+      });
+      winsHeaders.forEach((el) => {
+        el?.classList.add('ascended');
+        el?.classList.remove('discended');
+        el.childNodes.forEach((e) => {
+          if (e.nodeName !== '#text') {
+            if ((e as HTMLElement).classList.contains('arrow-up')) {
+              (e as HTMLElement).classList.remove('arrow-hidden');
+            }
+          }
+        });
+      });
+    }
+
+    this.winnersPagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
+        (element as HTMLElement).classList.remove('hidden');
+      }
+    });
+  };
+
+  timeHeaderHandler = async (target: HTMLElement): Promise<void> => {
+    const pageNbr = getCurrerntPageNbr();
+    if ((target as HTMLElement).classList.contains('ascended')) {
+      await this.sortWinners('time', 'DISC');
+      const timeHeaders = document.querySelectorAll('.winner-best-time-header');
+      const arrows = document.querySelectorAll('.arrows');
+      arrows.forEach((el) => {
+        el.classList.add('arrow-hidden');
+      });
+      timeHeaders.forEach((el) => {
+        el?.classList.remove('ascended');
+        el?.classList.add('discended');
+        (el?.lastChild as HTMLElement).classList.remove('arrow-hidden');
+      });
+    } else {
+      await this.sortWinners('time', 'ASC');
+      const timeHeaders = document.querySelectorAll('.winner-best-time-header');
+      const arrows = document.querySelectorAll('.arrows');
+      arrows.forEach((el) => {
+        el.classList.add('arrow-hidden');
+      });
+      timeHeaders.forEach((el) => {
+        el?.classList.add('ascended');
+        el?.classList.remove('discended');
+        el.childNodes.forEach((e) => {
+          if (e.nodeName !== '#text') {
+            if ((e as HTMLElement).classList.contains('arrow-up')) {
+              (e as HTMLElement).classList.remove('arrow-hidden');
+            }
+          }
+        });
+      });
+    }
+
+    this.winnersPagesContainer.childNodes.forEach((element) => {
+      (element as HTMLElement).classList.add('hidden');
+      if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
+        (element as HTMLElement).classList.remove('hidden');
+      }
+    });
   };
 
   listenTOWinnersPage = async (): Promise<void> => {
@@ -238,10 +354,13 @@ export default class Winners {
         await this.buttonPrevHandler();
       }
 
-      if ((e.target as HTMLElement).classList.contains('winners-button_prev')) {
-        // await this.buttonPrevHandler();
+      if ((e.target as HTMLElement).classList.contains('winner-wins-number-header')) {
+        await this.winsHeaderHandler(e.target as HTMLElement);
+      }
+
+      if ((e.target as HTMLElement).classList.contains('winner-best-time-header')) {
+        await this.timeHeaderHandler(e.target as HTMLElement);
       }
     });
-    // 'ASC' | 'DESC',
   };
 }
