@@ -33,7 +33,6 @@ export default class Communicator {
   private generateCarsQueryString = (queryParams: IcarsQueryParams[]): string => {
     if (queryParams.length) {
       const res = `?${queryParams.map((x) => `${x.key}=${x.value}`).join('&')}`;
-      console.log('res!!!  ', res);
       return res;
     }
     return '';
@@ -46,9 +45,6 @@ export default class Communicator {
       errorHandler(response, SUCSESS);
       carsList = await response.json();
       this.countXCars = Number(response.headers.get('X-Total-Count'));
-      console.log('request = ', `${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
-      console.log('carsList = ', carsList);
-      console.log('countXCARS = ', this.countXCars);
     } catch (error) { printErrorMessage(error, 'get cars'); }
     return carsList;
   };
@@ -131,8 +127,6 @@ export default class Communicator {
       errorHandler(response, SUCSESS);
       winnersList = await response.json();
       this.countXWinners = Number(response.headers.get('X-Total-Count'));
-      console.log('winnersList = ', winnersList);
-      console.log('countXWINNERS = ', this.countXWinners);
     } catch (error) { printErrorMessage(error, 'get winners'); }
     return winnersList;
   };
@@ -143,7 +137,6 @@ export default class Communicator {
       const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`);
       errorHandler(response, SUCSESS);
       winner = await response.json();
-      console.log('winner = ', winner);
     } catch (error) {
       printErrorMessage(error, 'get winner');
     }
@@ -168,7 +161,6 @@ export default class Communicator {
 
   updateWinner = async (id: number, winnerParam: Iwinner): Promise<Response> => {
     let updatedWinner;
-    console.log('))))))))', winnerParam.wins, winnerParam.time);
     try {
       const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
         method: 'PUT',
@@ -214,7 +206,7 @@ export default class Communicator {
       const response = await fetch(`${this.basePath}/engine${this.generateEngineQueryString(queryParams)}`);
       errorHandler(response, SUCSESS);
       result = await response.json();
-      console.log('EngineResult = ', result);
+      // console.log('EngineResult = ', result);
     } catch (error) { printErrorMessage(error, 'start/stop engine'); }
     return result;
   };
@@ -229,10 +221,9 @@ export default class Communicator {
         success: 'true',
         id: queryParams[0].id,
       };
-      console.log('EngineDriveResultDRIVE = ', result);
     } catch (error) {
       printErrorMessage(error, 'switch engine');
-      console.log('ERROR id = ', queryParams[0].id);
+      // console.log('ERROR id = ', queryParams[0].id);
       result = {
         success: 'false',
         id: queryParams[0].id,

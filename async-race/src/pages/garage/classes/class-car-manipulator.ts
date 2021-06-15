@@ -51,7 +51,6 @@ export default class CarManipulator {
   };
 
   fillUpdateInput(name: string, color: string): void {
-    console.log('NEW NAME = ', name);
     this.updateCarBlock.carNameInput.removeAttribute('disabled');
     this.updateCarBlock.carColorInput.removeAttribute('disabled');
     this.updateCarBlock.button.classList.remove('disabled');

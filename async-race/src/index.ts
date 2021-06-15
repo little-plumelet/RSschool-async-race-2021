@@ -7,7 +7,6 @@ import router from './router/create-router';
 import navToSubPage from './shared/functions/function-subpage-navigation';
 import getCurrerntPageNbr from './shared/functions/function-get-current-page-number';
 
-//  подумать куда перенести template
 document.body.appendChild(header.header);
 document.body.appendChild(pageGarage.garageContainer);
 document.body.appendChild(pageWinners.winnersContainer);

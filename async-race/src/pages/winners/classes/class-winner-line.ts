@@ -38,7 +38,6 @@ export default class WinnerLine {
     this.carNameEl = createDomElement(winnerLineParams.carName);
     this.winsNumberEl = createDomElement(winnerLineParams.wins);
     this.bestTimeEl = createDomElement(winnerLineParams.time);
-    // this.numberEl = createDomElement();
 
     this.winnerLineContainer.appendChild(this.carNbrEl);
     this.winnerLineContainer.appendChild(this.carIconContainer);

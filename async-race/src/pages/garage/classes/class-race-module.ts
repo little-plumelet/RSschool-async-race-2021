@@ -35,7 +35,6 @@ export default class RaceModule {
   }
 
   getCarinfo = async (): Promise<void> => {
-    // нет ясности как пользоваться данным параметром правильно
     const carInfo = await communicator.getCar(this.raceModId);
     this.raceModName = carInfo?.name;
     this.raceModColor = carInfo?.color;
@@ -51,13 +50,5 @@ export default class RaceModule {
 
     this.raceModContainer.appendChild(this.raceModCarControlEl);
     this.raceModContainer.appendChild(this.raceModTrackBlockEl);
-    this.select();
   };
-
-  select(): void {
-    this.raceModCarControl?.buttonSelect.addEventListener('click', (e) => {
-      console.log(`The ${this.raceModId} was cklicked!!!!`);
-      console.log(`The ${this.raceModId} was cklicked!!!!`, e.target);
-    });
-  }
 }

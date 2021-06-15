@@ -127,14 +127,13 @@ export default class Winners {
   }
 
   getWinnersTotalNbr = async (): Promise<void> => {
-    await communicator.getWinners([{ limitOrPage: { key: '_limit', value: 10 } }]);
-    console.log('winners', communicator.countXWinners);
+    await communicator.getWinners([{ limitOrPage: { key: '_limit', value: WINNERSPERPAGE } }]);
     this.winnersTotalNbrEl.innerText = `(${communicator.countXWinners})`;
     this.winnersTotalNbr = communicator.countXWinners;
   };
 
   calculatePagesNbr = async (): Promise<void> => {
-    await communicator.getCars([{}, { key: '_limit', value: 10 }]); // нет ясности как пользоваться данным параметром правильно
+    await communicator.getCars([{}, { key: '_limit', value: WINNERSPERPAGE }]);
     this.winnersPagesNbr = Math.ceil(communicator.countXWinners / WINNERSPERPAGE);
     if (this.winnersPagesNbr <= 0) this.winnersPagesNbr = 1;
   };
@@ -142,7 +141,6 @@ export default class Winners {
   createSetOfWinnerLines = async (): Promise<void> => {
     const winnersArr: Iwinner[] = [];
     const winners = await communicator.getWinners([{}, {}]);
-    console.log('++++', winners);
     winners.forEach((element) => {
       if (element) winnersArr.push(element);
     });
@@ -151,7 +149,6 @@ export default class Winners {
       const winnerLine = new WinnerLine(element);
       this.setOfWinners.push(winnerLine);
     });
-    console.log('$$$$$$', winners);
   };
 
   renderWinnersTable = async (): Promise<void> => {
@@ -234,7 +231,6 @@ export default class Winners {
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
         (element as HTMLElement).classList.remove('hidden');
         router.add(`winners/${pageNbr}`, () => {});
-        console.log('nbr = ', pageNbr);
         if ((pageNbr) === this.winnersPagesNbr) this.winnersNextPageButton.classList.add('disabled');
         this.winnersPrevPageButton.classList.remove('disabled');
       }

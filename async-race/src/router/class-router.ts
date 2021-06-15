@@ -1,5 +1,5 @@
 export default class Router {
-  pathName; // подумать на что поменять
+  pathName;
 
   constructor(options: Record<string, string>) {
     if (options.pathName) this.pathName = options.pathName;
@@ -10,7 +10,6 @@ export default class Router {
     let newUrl: string = (window.location.href);
     newUrl = newUrl.replace(/#(.*)$/, '');
     newUrl = newUrl.concat('#', path);
-    console.log('NEWURL', newUrl);
     window.history.pushState(doc, '', newUrl);
     // window.location.href = newUrl;
     this.pathName = path;
