@@ -47,3 +47,10 @@
       margin-top: 50px;
       box-shadow: 0 0 40px 40px $orange-light_btn inset, 0 0 0 0 $orange_btn;
   }
+
+  .disabled {
+    pointer-events: none;
+    background-color: $dark_bgr;
+    box-shadow: 0 0 40px 40px $orange-dark_btn inset, 0 0 0 0 $orange-dark_btn;
+    border-color: $orange-dark_btn;
+  }

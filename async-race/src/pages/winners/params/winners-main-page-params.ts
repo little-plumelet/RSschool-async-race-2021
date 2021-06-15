@@ -43,13 +43,13 @@ const winnersMainPageParams = {
   },
   nextPageButton: {
     tegName: 'button',
-    classNames: ['winners-button', 'winners-button_next'],
+    classNames: ['winners-button', 'winners-button_next', 'disabled'],
     attributes: [[]],
     result: 'NEXT',
   },
   prevPageButton: {
     tegName: 'button',
-    classNames: ['winners-button', 'winners-button_prev'],
+    classNames: ['winners-button', 'winners-button_prev', 'disabled'],
     attributes: [[]],
     result: 'PREV',
   },

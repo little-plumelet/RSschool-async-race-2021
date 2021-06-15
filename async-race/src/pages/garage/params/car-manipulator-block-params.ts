@@ -38,16 +38,16 @@ const carManipulatorBlockParams = {
     nameInput: {
       tegName: 'input',
       classNames: ['manipulator-input', 'manipulator-input_update-car', 'manipulator-input-update-car-name'],
-      attributes: [['id', 'update-car-name'], ['name', 'update-car-name'], ['type', 'text']],
+      attributes: [['id', 'update-car-name'], ['name', 'update-car-name'], ['type', 'text'], ['disabled', 'disabled']],
     },
     colorInput: {
       tegName: 'input',
       classNames: ['manipulator-input', 'manipulator-input_update-car', 'block-manipulator-input_update-car-color'],
-      attributes: [['id', 'update-car-color'], ['name', 'update-car-color'], ['type', 'color'], ['value', '#ffffff']],
+      attributes: [['id', 'update-car-color'], ['name', 'update-car-color'], ['type', 'color'], ['value', '#ffffff'], ['disabled', 'disabled']],
     },
     button: {
       tegName: 'button',
-      classNames: ['manipulator-button', 'manipulator-button_update-car'],
+      classNames: ['manipulator-button', 'manipulator-button_update-car', 'disabled'],
       attributes: [[]],
       result: 'Update',
     },

@@ -45,8 +45,6 @@ export default class Winners {
 
   winnersPagesContainer: HTMLElement;
 
-  winnersHeaderLine: HTMLElement;
-
   winnersPagesNbr: number;
 
   winnersNextPageButton: HTMLElement;
@@ -68,7 +66,6 @@ export default class Winners {
     this.winnersTitle = createDomElement(winnersMainPageParams.title);
     this.winnersTotalNbrEl = createDomElement(winnersMainPageParams.totalNbrWinners);
     this.winnersPagesContainer = createDomElement(winnersMainPageParams.subPagesContainer);
-    this.winnersHeaderLine = new HeaderWinnerLine().winnerLineContainer;
 
     this.createPagesOfWinners();
     this.winnersNextPageButton = createDomElement(winnersMainPageParams.nextPageButton);
@@ -93,7 +90,7 @@ export default class Winners {
 
   calculatePagesNbr = async (): Promise<void> => {
     await communicator.getCars([{}, { key: '_limit', value: 10 }]); // нет ясности как пользоваться данным параметром правильно
-    this.winnersPagesNbr = Math.ceil(communicator.countXCars / WINNERSPERPAGE);
+    this.winnersPagesNbr = Math.ceil(communicator.countXWinners / WINNERSPERPAGE);
   };
 
   createSetOfWinnerLines = async (params: IwinnersQueryParams): Promise<void> => {
@@ -121,7 +118,9 @@ export default class Winners {
     await this.calculatePagesNbr();
     for (let j = 0; j < this.winnersPagesNbr; j += 1) {
       const winnersSubPage = createSubPage(j + 1, winnersMainPageParams);
-      winnersSubPage.appendChild(this.winnersHeaderLine);
+      const winnersHeaderLine = new HeaderWinnerLine().winnerLineContainer;
+      winnersSubPage.appendChild(winnersHeaderLine);
+      if ((j + 1) < this.winnersPagesNbr) this.winnersNextPageButton.classList.remove('disabled');
       for (let i = 0; i < WINNERSPERPAGE; i += 1) {
         if (this.setOfWinners[j * WINNERSPERPAGE + i]) {
           (this.setOfWinners[j * WINNERSPERPAGE + i]).carNbrEl.innerText = `${i + 1}`;
@@ -193,6 +192,9 @@ export default class Winners {
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
         (element as HTMLElement).classList.remove('hidden');
         router.add(`winners/${pageNbr}`, () => {});
+        console.log('nbr = ', pageNbr);
+        if ((pageNbr) === this.winnersPagesNbr) this.winnersNextPageButton.classList.add('disabled');
+        this.winnersPrevPageButton.classList.remove('disabled');
       }
     });
   };
@@ -205,6 +207,8 @@ export default class Winners {
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
         (element as HTMLElement).classList.remove('hidden');
         router.add(`winners/${pageNbr}`, () => {});
+        if ((pageNbr) === 1) this.winnersPrevPageButton.classList.add('disabled');
+        this.winnersNextPageButton.classList.remove('disabled');
       }
     });
   };

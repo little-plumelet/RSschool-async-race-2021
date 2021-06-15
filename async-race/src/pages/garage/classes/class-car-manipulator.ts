@@ -4,6 +4,7 @@ import CarManipulatorBlock from './class-car-manipulator-block';
 import carManipulatorBlockParams from '../params/car-manipulator-block-params';
 import communicator from '../../../server-communication/create-communicator';
 import { Icar } from '../../../shared/interfaces-communicator';
+import { INPUTCOLOR } from '../../../shared/constants';
 
 export default class CarManipulator {
   manipulatorContent: HTMLElement;
@@ -16,21 +17,23 @@ export default class CarManipulator {
 
   updateCarBlockEl: HTMLElement;
 
-  buttonsBlock: HTMLElement;
+  buttonsBlock: ButtonsManipulatorBlock;
+
+  buttonsBlockEl: HTMLElement;
 
   constructor() {
     this.createCarBlock = new CarManipulatorBlock(carManipulatorBlockParams.createCarBlock);
     this.updateCarBlock = new CarManipulatorBlock(carManipulatorBlockParams.updateCarBlock);
-    const buttonsBlock = new ButtonsManipulatorBlock(carManipulatorBlockParams.blockButtons);
+    this.buttonsBlock = new ButtonsManipulatorBlock(carManipulatorBlockParams.blockButtons);
 
     this.manipulatorContent = createDomElement(carManipulatorBlockParams.BlockContainer);
     this.createCarBlockEl = this.createCarBlock.blockContainer;
     this.updateCarBlockEl = this.updateCarBlock.blockContainer;
-    this.buttonsBlock = buttonsBlock.blockContainer;
+    this.buttonsBlockEl = this.buttonsBlock.blockContainer;
 
     this.manipulatorContent.appendChild(this.createCarBlockEl);
     this.manipulatorContent.appendChild(this.updateCarBlockEl);
-    this.manipulatorContent.appendChild(this.buttonsBlock);
+    this.manipulatorContent.appendChild(this.buttonsBlockEl);
   }
 
   updateCarInfoInDB = async (id: number): Promise<Response | Icar | undefined> => {
@@ -49,7 +52,23 @@ export default class CarManipulator {
 
   fillUpdateInput(name: string, color: string): void {
     console.log('NEW NAME = ', name);
+    this.updateCarBlock.carNameInput.removeAttribute('disabled');
+    this.updateCarBlock.carColorInput.removeAttribute('disabled');
+    this.updateCarBlock.button.classList.remove('disabled');
     (this.updateCarBlock.carNameInput as HTMLInputElement).value = name;
     (this.updateCarBlock.carColorInput as HTMLInputElement).value = color;
+  }
+
+  clearCreateCarBlock(): void {
+    (this.createCarBlock.carNameInput as HTMLInputElement).value = '';
+    (this.createCarBlock.carColorInput as HTMLInputElement).value = INPUTCOLOR;
+  }
+
+  clearUpdateCarBlock(): void {
+    (this.updateCarBlock.carNameInput as HTMLInputElement).value = '';
+    this.updateCarBlock.carNameInput.setAttribute('disabled', 'disabled');
+    (this.updateCarBlock.carColorInput as HTMLInputElement).value = INPUTCOLOR;
+    this.updateCarBlock.carColorInput.setAttribute('disabled', 'disabled');
+    this.updateCarBlock.button.classList.add('disabled');
   }
 }

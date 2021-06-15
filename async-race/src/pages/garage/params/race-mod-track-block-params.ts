@@ -19,7 +19,7 @@ const raceModTrackParams = {
     },
     stopButton: {
       tegName: 'button',
-      classNames: ['move-control-button', 'move-control-button_stop'],
+      classNames: ['move-control-button', 'move-control-button_stop', 'disabled'],
       attributes: [[]],
       result: 'Stop',
     },
@@ -34,7 +34,7 @@ const raceModTrackParams = {
     carIcon: {
       tegName: 'div',
       classNames: ['car-icon'],
-      attributes: [[]],
+      attributes: [['style', 'left: 0px']],
     },
     finishPointContainer: {
       tegName: 'div',

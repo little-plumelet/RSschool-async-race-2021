@@ -53,23 +53,21 @@ window.addEventListener('popstate', () => {
     const pageNbr = getCurrerntPageNbr();
     router.add(`garage/${pageNbr}`, navToSubPage(pageNbr, pageGarage));
     pageGarage.pageNbrForReturn = getCurrerntPageNbr();
+    pageGarage.garagePrevPageButton.classList.remove('disabled');
+    if ((pageNbr) === pageGarage.garagePagesNbr) pageGarage.garageNextPageButton.classList.add('disabled');
+    pageGarage.garagePrevPageButton.classList.remove('disabled');
+    if ((pageNbr) === 1) pageGarage.garagePrevPageButton.classList.add('disabled');
   } else {
     pageGarage.garageContainer.classList.add('hidden');
     pageWinners.winnersContainer.classList.remove('hidden');
     const pageNbr = getCurrerntPageNbr();
     router.add(`winners/${pageNbr}`, navToSubPage(pageNbr, pageWinners));
+    pageWinners.winnersNextPageButton.classList.remove('disabled');
     pageGarage.pageNbrForReturn = getCurrerntPageNbr();
+    if ((pageNbr) === pageWinners.winnersPagesNbr) pageWinners.winnersNextPageButton.classList.add('disabled');
+    pageGarage.garagePrevPageButton.classList.add('disabled');
+    if ((pageNbr) === 1) pageWinners.winnersPrevPageButton.classList.add('disabled'); 
   }
 });
+
 pageWinners.sortByWinsNbr('ASC');
-
-// let prev = performance.now();
-// let times = 0;
-
-// requestAnimationFrame(function measure(time) {
-//   document.body.insertAdjacentHTML('beforeEnd', Math.floor(time - prev) + ' ');
-//   prev = time;
-
-//   times += 1;
-//   if (times < 10) requestAnimationFrame(measure);
-// });

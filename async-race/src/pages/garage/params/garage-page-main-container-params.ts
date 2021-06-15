@@ -37,14 +37,14 @@ const garageMainPageParams = {
   },
   nextPageButton: {
     tegName: 'button',
-    classNames: ['garage-button', 'garage-button_next'],
-    attributes: [[]],
+    classNames: ['garage-button', 'garage-button_next', 'disabled'],
+    attributes: [['type', 'button']],
     result: 'NEXT',
   },
   prevPageButton: {
     tegName: 'button',
-    classNames: ['garage-button', 'garage-button_prev'],
-    attributes: [[]],
+    classNames: ['garage-button', 'garage-button_prev', 'disabled'],
+    attributes: [['type', 'button']],
     result: 'PREV',
   },
 };

@@ -11,6 +11,11 @@ import carModelsArr from '../../../shared/data-cars-models';
 import carColorArr from '../../../shared/data-cars-colors';
 import calculateWinner from '../../../shared/functions/function-calculate-winner-of-race';
 import createSubPage from '../../shared-functions/create-sub-page';
+import getWinnerName from '../../../shared/functions/function-get-winner-name';
+import deleteWinnerPopUp from '../../../shared/functions/function-delete-winner-popup';
+import showWinnerPopUp from '../../../shared/functions/function-show-winner-popup';
+import pageWinners from '../../winners/create-page-winners';
+import Ianimation from '../interfaces/animation-interface';
 import {
   CARSPERPAGE,
   CARSBUNCHNBR,
@@ -19,11 +24,13 @@ import {
   TIMEOUTWINNER,
   CARFINISHOFFSET,
 } from '../../../shared/constants';
-import getWinnerName from '../../../shared/functions/function-get-winner-name';
-import deleteWinnerPopUp from '../../../shared/functions/function-delete-winner-popup';
-import showWinnerPopUp from '../../../shared/functions/function-show-winner-popup';
-import pageWinners from '../../winners/create-page-winners';
-import Ianimation from '../interfaces/animation-interface';
+import {
+  getRandomIntInclusive,
+  disableToggleStartButtons,
+  allStopButtonDisabled,
+  MoveToStartAllCarsOnSubPage,
+  allCarsOfSubPageOnStartPosition,
+} from '../function-utils';
 
 let animationId = [{} as Ianimation];
 const animationMod = {
@@ -31,42 +38,28 @@ const animationMod = {
   AnimationId: 0,
 };
 
-function getRandomIntInclusive(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
-}
-
 function carAnimation(
   id: number, start: number, carIcon: HTMLElement, carOffset: number, endPoint: number,
 ): VoidFunction {
   return function res(): void {
     const timePassed = Date.now() - start;
     const position = timePassed * carOffset;
+    // let isPushNeeded = true;
     carIcon.setAttribute('style', `left: ${position}px`);
     if (position < endPoint) {
       animationMod.carId = id;
       animationMod.AnimationId = window.requestAnimationFrame(
         carAnimation(id, start, carIcon, carOffset, endPoint),
       );
+      // console.log('rrrrrrr', animationMod.AnimationId);
+      // animationId.forEach((el) => {
+      //   if (el.AnimationId === animationMod.AnimationId) isPushNeeded = false;
+      // });
+      // if (isPushNeeded) animationId.push(animationMod);
       animationId.push(animationMod);
     }
   };
 }
-
-// function carAnimation(target: HTMLElement, velocity: number, distance: number): NodeJS.Timeout {
-//   const carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
-//   const start = Date.now();
-//   const startPoint = carIcon.getBoundingClientRect().left;
-//   const endPoint = window.innerWidth - startPoint - CARFINISHOFFSET;
-//   const carOffset = endPoint / ((distance / velocity));
-
-//   const timer = setInterval(() => {
-//     const timePassed = Date.now() - start;
-//     const position = timePassed * carOffset;
-//     carIcon.style.left = `${position}px`;
-//     if (position >= endPoint) clearInterval(timer);
-//   }, 20);
-//   return timer;
-// }
 
 export default class Garage {
   garageContainer: HTMLElement;
@@ -150,12 +143,13 @@ export default class Garage {
   };
 
   renderPages = async (): Promise<void> => {
+    await this.calculatePagesNbr();
     while (this.garagePagesContainer.firstElementChild) {
       this.garagePagesContainer.firstElementChild.remove();
     }
-    await this.calculatePagesNbr();
     for (let j = 0; j < this.garagePagesNbr; j += 1) {
       const garageSubPage = createSubPage(j + 1, garageMainPageParams);
+      if ((j + 1) < this.garagePagesNbr) this.garageNextPageButton.classList.remove('disabled');
       for (let i = 0; i < CARSPERPAGE; i += 1) {
         if (this.raceModulesSet[j * CARSPERPAGE + i]) {
           garageSubPage.appendChild(this.raceModulesSet[j * CARSPERPAGE + i].raceModContainer);
@@ -198,6 +192,7 @@ export default class Garage {
     id: number, target: HTMLElement, distance: number, velocity: number,
   ): Promise<IraceResult> => {
     let carIcon;
+    // let isPushNeeded = true;
     if (target.classList.contains('car-icon')) carIcon = target;
     else carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
     const start = Date.now();
@@ -209,26 +204,19 @@ export default class Garage {
     animationMod.AnimationId = window.requestAnimationFrame(
       carAnimation(id, start, carIcon, carOffset, endPoint),
     );
-
-    // const rrr = window.requestAnimationFrame(
-    //   carAnimation(start, carIcon, carOffset, endPoint),
-    // );
-    animationId.push(animationMod);
+    // animationId.forEach((el) => {
+    //   if (el.AnimationId === animationMod.AnimationId) isPushNeeded = false;
+    // });
+    // if (isPushNeeded) animationId.push(animationMod);
+    // if (!(animationId.includes(animationMod))) animationId.push(animationMod);
     console.log('!!!!all ID', animationId);
     const res = await communicator.switchEngineDrive([{ id, status: 'drive' }]);
     if (res.success === 'false') {
       console.log('yyyy', id, res.id);
-      // for (let i = 0; i < animationId.length; i += 1) {
-        // console.log('++++all ID', animationId, res.id);
-        if (animationMod.carId === res.id) {
-          // window.cancelAnimationFrame(animationId[i].AnimationId);
-          window.cancelAnimationFrame(animationMod.AnimationId);
-          console.log('--- ID', animationMod.AnimationId, animationMod.carId, res.id);
-          // console.log('--- ID', animationId[i], res.id);
-        }
-      // }
-      
-      // res.id = id;
+      if (animationMod.carId === res.id) {
+        window.cancelAnimationFrame(animationMod.AnimationId);
+        console.log('--- ID', animationMod.AnimationId, animationMod.carId, res.id);
+      }
     }
     res.distance = distance;
     res.velocity = velocity;
@@ -275,17 +263,36 @@ export default class Garage {
         el.raceModTrackBlock?.trackBlock.updateCarIconColor((updatedCarInfo as Icar)?.color);
       }
     });
-    (this.garageCarManipulator.updateCarBlock.carColorInput as HTMLInputElement).value = INPUTCOLOR;
-    (this.garageCarManipulator.updateCarBlock.carNameInput as HTMLInputElement).value = '';
+    this.garageCarManipulator.clearUpdateCarBlock();
   };
 
   buttonStartHandler = async (target: HTMLElement): Promise<void> => {
     const id = Number((target as HTMLElement).parentElement?.parentElement?.parentElement?.getAttribute('id'));
     const carRaceparams = await communicator.startORStopCarEngine([{ id, status: 'started' }]);
     if (carRaceparams.velocity && carRaceparams.distance) {
-      this.animationStart(id, target, carRaceparams.distance, carRaceparams.velocity);
+      target.classList.add('disabled');
+      this.garageCarManipulator.buttonsBlock.buttonRace.classList.add('disabled');
+      target.nextElementSibling?.classList.remove('disabled');
+      this.animationStart(id,
+        target, carRaceparams.distance, carRaceparams.velocity);
     }
-    // animationId = [{} as Ianimation];
+    console.log('MANY ANIMATIONS', animationId);
+  };
+
+  buttonStopHandler = async (target: HTMLElement): Promise<void> => {
+    const id = Number((target as HTMLElement).parentElement?.parentElement?.parentElement?.getAttribute('id'));
+    const carRaceparams = await communicator.startORStopCarEngine([{ id, status: 'stopped' }]);
+    console.log('555555', carRaceparams, id);
+    if (carRaceparams.velocity === 0) {
+      console.log('5555556666', id, animationMod.AnimationId, animationMod.carId);
+      window.cancelAnimationFrame(animationMod.AnimationId);
+      (target.previousSibling as HTMLElement).classList.remove('disabled');
+      const car = (target as HTMLElement).parentElement?.nextSibling?.firstChild as HTMLElement;
+      car.setAttribute('style', 'left: 0px');
+      console.log('style =', car.getAttribute('style'));
+      if (car.getAttribute('style') === 'left: 0px') target.classList.add('disabled');
+      if (allStopButtonDisabled()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+    }
   };
 
   buttonNextHandler = async (): Promise<void> => {
@@ -296,8 +303,12 @@ export default class Garage {
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
         (element as HTMLElement).classList.remove('hidden');
         router.add(`garage/${pageNbr}`, () => {});
+        if ((pageNbr) === this.garagePagesNbr) this.garageNextPageButton.classList.add('disabled');
+        this.garagePrevPageButton.classList.remove('disabled');
       }
     });
+    if (allCarsOfSubPageOnStartPosition()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+    else this.garageCarManipulator.buttonsBlock.buttonRace.classList.add('disabled');
   };
 
   buttonPrevHandler = async (): Promise<void> => {
@@ -308,8 +319,12 @@ export default class Garage {
       if ((element as HTMLElement).getAttribute('id') === `page-${pageNbr}`) {
         (element as HTMLElement).classList.remove('hidden');
         router.add(`garage/${pageNbr}`, () => {});
+        if ((pageNbr) === 1) this.garagePrevPageButton.classList.add('disabled');
+        this.garageNextPageButton.classList.remove('disabled');
       }
     });
+    if (allCarsOfSubPageOnStartPosition()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+    else this.garageCarManipulator.buttonsBlock.buttonRace.classList.add('disabled');
   };
 
   buttonCreateCarsHandler = async (): Promise<void> => {
@@ -360,7 +375,10 @@ export default class Garage {
     return resultsArr;
   };
 
-  buttonStartRaceHandler = async (): Promise<void> => {
+  buttonStartRaceHandler = async (target: HTMLElement): Promise<void> => {
+    const makeDisabled = true;
+    target.classList.add('disabled');
+    disableToggleStartButtons(makeDisabled);
     const resultsArr = await this.createArrRaceResult();
     const winnerCompaund = await calculateWinner(resultsArr);
     let winnerName = await getWinnerName(winnerCompaund.winner);
@@ -373,12 +391,20 @@ export default class Garage {
     pageWinners.updateWinnersTable(winnerCompaund);
   };
 
+  buttonResetRaceHandler = async (target: HTMLElement): Promise<void> => {
+    const makeDisabled = false;
+    this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+    disableToggleStartButtons(makeDisabled);
+    MoveToStartAllCarsOnSubPage();
+  };
+
   listenTOGaragePage = async (): Promise<void> => {
     let id: number;
 
     this.garageContainer.addEventListener('click', async (e): Promise<void> => {
       if ((e.target as HTMLElement).classList.contains('manipulator-button_create-car')) {
         this.buttonCreateHandler();
+        this.garageCarManipulator.clearCreateCarBlock();
       }
 
       if ((e.target as HTMLElement).classList.contains('car-control-button_select')) {
@@ -397,6 +423,10 @@ export default class Garage {
         await this.buttonStartHandler(e.target as HTMLElement);
       }
 
+      if ((e.target as HTMLElement).classList.contains('move-control-button_stop')) {
+        await this.buttonStopHandler(e.target as HTMLElement);
+      }
+
       if ((e.target as HTMLElement).classList.contains('garage-button_next')) {
         await this.buttonNextHandler();
       }
@@ -409,8 +439,16 @@ export default class Garage {
         await this.buttonCreateCarsHandler();
       }
 
+      if ((e.target as HTMLElement).classList.contains('manipulator-button_create-bunch')) {
+        await this.buttonCreateCarsHandler();
+      }
+
       if ((e.target as HTMLElement).classList.contains('manipulator-button_race')) {
-        await this.buttonStartRaceHandler();
+        await this.buttonStartRaceHandler(e.target as HTMLElement);
+      }
+
+      if ((e.target as HTMLElement).classList.contains('manipulator-button_reset')) {
+        await this.buttonResetRaceHandler(e.target as HTMLElement);
       }
     });
   };
