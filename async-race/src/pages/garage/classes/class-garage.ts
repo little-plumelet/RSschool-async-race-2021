@@ -32,10 +32,10 @@ import {
 } from '../function-utils';
 
 let animationId = [{} as Ianimation];
-const animationMod = {
-  carId: 0,
-  AnimationId: 0,
-};
+// const animationMod = {
+//   carId: 0,
+//   AnimationId: 0,
+// };
 
 function carAnimation(
   id: number, start: number, carIcon: HTMLElement, carOffset: number, endPoint: number,
@@ -43,19 +43,26 @@ function carAnimation(
   return function res(): void {
     const timePassed = Date.now() - start;
     const position = timePassed * carOffset;
-    // let isPushNeeded = true;
+    let isPushNeeded = true;
     carIcon.setAttribute('style', `left: ${position}px`);
     if (position < endPoint) {
+      const animationMod = {
+        carId: -1,
+        AnimationId: -1,
+      };
       animationMod.carId = id;
       animationMod.AnimationId = window.requestAnimationFrame(
         carAnimation(id, start, carIcon, carOffset, endPoint),
       );
       // console.log('rrrrrrr', animationMod.AnimationId);
-      // animationId.forEach((el) => {
-      //   if (el.AnimationId === animationMod.AnimationId) isPushNeeded = false;
-      // });
-      // if (isPushNeeded) animationId.push(animationMod);
-      animationId.push(animationMod);
+      animationId.forEach((el) => {
+        if (el.carId === animationMod.carId) {
+          const i = animationId.indexOf(el);
+          animationId[i] = animationMod;
+          isPushNeeded = false;
+        }
+      });
+      if (isPushNeeded) animationId.push(animationMod);
     }
   };
 }
@@ -199,23 +206,24 @@ export default class Garage {
     const endPoint = window.innerWidth - startPoint - CARFINISHOFFSET;
     const carOffset = endPoint / ((distance / velocity));
 
+    const animationMod = {
+      carId: -1,
+      AnimationId: -1,
+    };
     animationMod.carId = id;
     animationMod.AnimationId = window.requestAnimationFrame(
       carAnimation(id, start, carIcon, carOffset, endPoint),
     );
-    // animationId.forEach((el) => {
-    //   if (el.AnimationId === animationMod.AnimationId) isPushNeeded = false;
-    // });
-    // if (isPushNeeded) animationId.push(animationMod);
-    // if (!(animationId.includes(animationMod))) animationId.push(animationMod);
     console.log('!!!!all ID', animationId);
     const res = await communicator.switchEngineDrive([{ id, status: 'drive' }]);
     if (res.success === 'false') {
-      console.log('yyyy', id, res.id);
-      if (animationMod.carId === res.id) {
-        window.cancelAnimationFrame(animationMod.AnimationId);
-        console.log('--- ID', animationMod.AnimationId, animationMod.carId, res.id);
-      }
+      console.log('yyyy', id, res.id, animationMod.carId);
+      animationId.forEach((el) => {
+        if (el.carId === res.id) {
+          window.cancelAnimationFrame(el.AnimationId);
+          console.log('--- ID', el.AnimationId, el.carId, res.id);
+        }
+      });
     }
     res.distance = distance;
     res.velocity = velocity;
@@ -283,8 +291,12 @@ export default class Garage {
     const carRaceparams = await communicator.startORStopCarEngine([{ id, status: 'stopped' }]);
     console.log('555555', carRaceparams, id);
     if (carRaceparams.velocity === 0) {
-      console.log('5555556666', id, animationMod.AnimationId, animationMod.carId);
-      window.cancelAnimationFrame(animationMod.AnimationId);
+      animationId.forEach((el) => {
+        if (el.carId === id) {
+          window.cancelAnimationFrame(el.AnimationId);
+          console.log('5555556666', id, el.AnimationId, el.carId);
+        }
+      });
       (target.previousSibling as HTMLElement).classList.remove('disabled');
       const car = (target as HTMLElement).parentElement?.nextSibling?.firstChild as HTMLElement;
       car.setAttribute('style', 'left: 0px');
