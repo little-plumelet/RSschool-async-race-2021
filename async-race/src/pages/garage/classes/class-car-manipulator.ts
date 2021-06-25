@@ -4,7 +4,9 @@ import CarManipulatorBlock from './class-car-manipulator-block';
 import carManipulatorBlockParams from '../params/car-manipulator-block-params';
 import communicator from '../../../server-communication/create-communicator';
 import { Icar } from '../../../shared/interfaces-communicator';
-import { INPUTCOLOR } from '../../../shared/constants';
+import CONSTANTS from '../../../shared/constants';
+
+const { inputColor } = CONSTANTS;
 
 export default class CarManipulator {
   manipulatorContent: HTMLElement;
@@ -60,13 +62,13 @@ export default class CarManipulator {
 
   clearCreateCarBlock(): void {
     (this.createCarBlock.carNameInput as HTMLInputElement).value = '';
-    (this.createCarBlock.carColorInput as HTMLInputElement).value = INPUTCOLOR;
+    (this.createCarBlock.carColorInput as HTMLInputElement).value = inputColor;
   }
 
   clearUpdateCarBlock(): void {
     (this.updateCarBlock.carNameInput as HTMLInputElement).value = '';
     this.updateCarBlock.carNameInput.setAttribute('disabled', 'disabled');
-    (this.updateCarBlock.carColorInput as HTMLInputElement).value = INPUTCOLOR;
+    (this.updateCarBlock.carColorInput as HTMLInputElement).value = inputColor;
     this.updateCarBlock.carColorInput.setAttribute('disabled', 'disabled');
     this.updateCarBlock.button.classList.add('disabled');
   }

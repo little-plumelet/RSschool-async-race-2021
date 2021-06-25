@@ -1,25 +1,13 @@
-const CARSPERPAGE = 7;
-const WINNERSPERPAGE = 10;
-const ICONWINNERWIDTH = 64;
-const ICONWINNERHEIGHT = 34;
-const CARSBUNCHNBR = 100;
-const HEXCOLORLETTERS = 6;
-const INPUTCOLOR = '#ffffff';
-const MILICECINCEC = 1000;
-const TIMEOUTWINNER = 5000;
-const ANIMATIONCOEFF = 3;
-const CARFINISHOFFSET = window.innerWidth * 0.1;
-
-export {
-  CARSPERPAGE,
-  WINNERSPERPAGE,
-  ICONWINNERWIDTH,
-  ICONWINNERHEIGHT,
-  CARSBUNCHNBR,
-  INPUTCOLOR,
-  HEXCOLORLETTERS,
-  TIMEOUTWINNER,
-  ANIMATIONCOEFF,
-  CARFINISHOFFSET,
-  MILICECINCEC,
+const CONSTANTS = {
+  carsPerPage: 7,
+  winnersPerPage: 10,
+  iconWinnerWidth: 64,
+  carsBunchNbr: 100,
+  hexColorLetters: 6,
+  inputColor: '#ffffff',
+  miliSecInSec: 1000,
+  timeOutWinner: 5000,
+  carFinishOffset: window.innerWidth * 0.1,
 };
+
+export default CONSTANTS;

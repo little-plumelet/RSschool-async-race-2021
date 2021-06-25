@@ -6,8 +6,10 @@ import createSubPage from '../../shared-functions/create-sub-page';
 import getCurrerntPageNbr from '../../../shared/functions/function-get-current-page-number';
 import router from '../../../router/create-router';
 import { Iwinner, IraceResult } from '../../../shared/interfaces-communicator';
-import { WINNERSPERPAGE } from '../../../shared/constants';
+import CONSTANTS from '../../../shared/constants';
 import HeaderWinnerLine from './class-header-winner-line';
+
+const { winnersPerPage } = CONSTANTS;
 
 function winsSort(winners: WinnerLine[], order: string): WinnerLine[] {
   const res = [];
@@ -127,14 +129,14 @@ export default class Winners {
   }
 
   getWinnersTotalNbr = async (): Promise<void> => {
-    await communicator.getWinners([{ limitOrPage: { key: '_limit', value: WINNERSPERPAGE } }]);
+    await communicator.getWinners([{ limitOrPage: { key: '_limit', value: winnersPerPage } }]);
     this.winnersTotalNbrEl.innerText = `(${communicator.countXWinners})`;
     this.winnersTotalNbr = communicator.countXWinners;
   };
 
   calculatePagesNbr = async (): Promise<void> => {
-    await communicator.getCars([{}, { key: '_limit', value: WINNERSPERPAGE }]);
-    this.winnersPagesNbr = Math.ceil(communicator.countXWinners / WINNERSPERPAGE);
+    await communicator.getCars([{}, { key: '_limit', value: winnersPerPage }]);
+    this.winnersPagesNbr = Math.ceil(communicator.countXWinners / winnersPerPage);
     if (this.winnersPagesNbr <= 0) this.winnersPagesNbr = 1;
   };
 
@@ -161,10 +163,10 @@ export default class Winners {
       const winnersHeaderLine = new HeaderWinnerLine().winnerLineContainer;
       winnersSubPage.appendChild(winnersHeaderLine);
       if ((j + 1) < this.winnersPagesNbr) this.winnersNextPageButton.classList.remove('disabled');
-      for (let i = 0; i < WINNERSPERPAGE; i += 1) {
-        if (this.setOfWinners[j * WINNERSPERPAGE + i]) {
-          (this.setOfWinners[j * WINNERSPERPAGE + i]).carNbrEl.innerText = `${i + 1}`;
-          winnersSubPage.appendChild(this.setOfWinners[j * WINNERSPERPAGE + i].winnerLineContainer);
+      for (let i = 0; i < winnersPerPage; i += 1) {
+        if (this.setOfWinners[j * winnersPerPage + i]) {
+          (this.setOfWinners[j * winnersPerPage + i]).carNbrEl.innerText = `${i + 1}`;
+          winnersSubPage.appendChild(this.setOfWinners[j * winnersPerPage + i].winnerLineContainer);
         }
       }
       this.winnersPagesContainer.appendChild(winnersSubPage);

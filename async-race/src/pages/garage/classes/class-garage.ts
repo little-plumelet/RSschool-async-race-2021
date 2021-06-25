@@ -16,13 +16,7 @@ import deleteWinnerPopUp from '../../../shared/functions/function-delete-winner-
 import showWinnerPopUp from '../../../shared/functions/function-show-winner-popup';
 import pageWinners from '../../winners/create-page-winners';
 import Ianimation from '../interfaces/animation-interface';
-import {
-  CARSPERPAGE,
-  CARSBUNCHNBR,
-  HEXCOLORLETTERS,
-  TIMEOUTWINNER,
-  CARFINISHOFFSET,
-} from '../../../shared/constants';
+import CONSTANTS from '../../../shared/constants';
 import {
   getRandomIntInclusive,
   disableToggleStartButtons,
@@ -31,6 +25,13 @@ import {
   allCarsOfSubPageOnStartPosition,
 } from '../function-utils';
 
+const {
+  carsPerPage,
+  carsBunchNbr,
+  hexColorLetters,
+  timeOutWinner,
+  carFinishOffset,
+} = CONSTANTS;
 let animationId = [{} as Ianimation];
 
 function carAnimation(
@@ -133,14 +134,14 @@ export default class Garage {
   }
 
   getCarsTotalNbr = async (): Promise<void> => {
-    await communicator.getCars([{}, { key: '_limit', value: CARSPERPAGE }]);
+    await communicator.getCars([{}, { key: '_limit', value: carsPerPage }]);
     this.garageCarsTotalNbrEl.innerText = `(${communicator.countXCars})`;
     this.garageCarsTotalNbr = communicator.countXCars;
   };
 
   calculatePagesNbr = async (): Promise<void> => {
-    await communicator.getCars([{}, { key: '_limit', value: CARSPERPAGE }]);
-    this.garagePagesNbr = Math.ceil(communicator.countXCars / CARSPERPAGE);
+    await communicator.getCars([{}, { key: '_limit', value: carsPerPage }]);
+    this.garagePagesNbr = Math.ceil(communicator.countXCars / carsPerPage);
   };
 
   renderPages = async (): Promise<void> => {
@@ -151,9 +152,9 @@ export default class Garage {
     for (let j = 0; j < this.garagePagesNbr; j += 1) {
       const garageSubPage = createSubPage(j + 1, garageMainPageParams);
       if ((j + 1) < this.garagePagesNbr) this.garageNextPageButton.classList.remove('disabled');
-      for (let i = 0; i < CARSPERPAGE; i += 1) {
-        if (this.raceModulesSet[j * CARSPERPAGE + i]) {
-          garageSubPage.appendChild(this.raceModulesSet[j * CARSPERPAGE + i].raceModContainer);
+      for (let i = 0; i < carsPerPage; i += 1) {
+        if (this.raceModulesSet[j * carsPerPage + i]) {
+          garageSubPage.appendChild(this.raceModulesSet[j * carsPerPage + i].raceModContainer);
         }
       }
       this.garagePagesContainer.appendChild(garageSubPage);
@@ -210,7 +211,7 @@ export default class Garage {
     const startPoint = carIcon.getBoundingClientRect().left;
     const halfCarIconWidth = carIcon.getBoundingClientRect().right - startPoint;
 
-    const endPoint = window.innerWidth - halfCarIconWidth * 1.3 - CARFINISHOFFSET;
+    const endPoint = window.innerWidth - halfCarIconWidth * 1.3 - carFinishOffset;
     const carOffset = endPoint / ((distance / velocity));
 
     const animationMod = {
@@ -346,12 +347,12 @@ export default class Garage {
     const cars = [{} as Icar];
     const currentPage = getCurrerntPageNbr();
 
-    for (let i = 0; i < CARSBUNCHNBR; i += 1) {
+    for (let i = 0; i < carsBunchNbr; i += 1) {
       const car = {} as Icar;
       car.name = carNamesArr[getRandomIntInclusive(0, carNamesArr.length - 1)];
       car.name = `${car.name} ${carModelsArr[getRandomIntInclusive(0, carModelsArr.length - 1)]}`;
       car.color = '#';
-      for (let j = 0; j < HEXCOLORLETTERS; j += 1) {
+      for (let j = 0; j < hexColorLetters; j += 1) {
         car.color += carColorArr[getRandomIntInclusive(0, carColorArr.length - 1)];
       }
       cars.push(car);
@@ -398,7 +399,7 @@ export default class Garage {
     if (winnerName === '') winnerName = 'Nobody';
     animationId = [{} as Ianimation];
     showWinnerPopUp(winnerName, winnerCompaund.timeWinner);
-    setTimeout(deleteWinnerPopUp, TIMEOUTWINNER);
+    setTimeout(deleteWinnerPopUp, timeOutWinner);
 
     // записать победителя в список победителей
     if (winnerName !== 'Nobody') await pageWinners.updateWinnersTable(winnerCompaund);

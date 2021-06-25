@@ -3,7 +3,9 @@ import winnerLineParams from '../params/winner-line-params';
 import { Iwinner } from '../../../shared/interfaces-communicator';
 import communicator from '../../../server-communication/create-communicator';
 import iconCarSvg from '../../../shared/icon-car-svg';
-import { ICONWINNERWIDTH, ICONWINNERHEIGHT } from '../../../shared/constants';
+import CONSTANTS from '../../../shared/constants';
+
+const { iconWinnerWidth } = CONSTANTS;
 
 export default class WinnerLine {
   winnerLineContainer: HTMLElement;
@@ -50,8 +52,8 @@ export default class WinnerLine {
   createCarIcon(color: string): void {
     this.carIconContainer.innerHTML = iconCarSvg;
     this.carIconContainer.firstElementChild?.firstElementChild?.setAttribute('fill', color);
-    this.carIconContainer.firstElementChild?.setAttribute('width', `${ICONWINNERWIDTH}pt`);
-    this.carIconContainer.firstElementChild?.setAttribute('height', `${ICONWINNERHEIGHT}pt`);
+    this.carIconContainer.firstElementChild?.setAttribute('width', `${iconWinnerWidth}pt`);
+    this.carIconContainer.firstElementChild?.setAttribute('height', `${iconWinnerWidth}pt`);
   }
 
   fillWinnerLine = async (): Promise<void> => {

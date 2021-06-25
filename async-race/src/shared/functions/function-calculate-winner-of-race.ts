@@ -1,5 +1,7 @@
 import { IraceResult } from '../interfaces-communicator';
-import { MILICECINCEC } from '../constants';
+import CONSTANTS from '../constants';
+
+const { miliSecInSec } = CONSTANTS;
 
 async function calculateWinner(resultsArr: IraceResult[]): Promise<{
   winner: IraceResult; timeWinner: number;
@@ -23,7 +25,7 @@ async function calculateWinner(resultsArr: IraceResult[]): Promise<{
       if (timeCurrent < timeWinner) winner = tmp;
     }
   }
-  timeWinner = Math.round(timeWinner / MILICECINCEC);
+  timeWinner = Math.round(timeWinner / miliSecInSec);
   return { winner, timeWinner };
 }
 
