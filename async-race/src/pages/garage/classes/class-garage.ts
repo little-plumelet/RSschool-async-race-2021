@@ -170,6 +170,7 @@ export default class Garage {
       const raceModule = new RaceModule(element);
       this.raceModulesSet.push(raceModule);
     });
+    console.log(this.raceModulesSet);
   };
 
   updateSetOfModules = async (car: Icar): Promise<void> => {
@@ -306,7 +307,7 @@ export default class Garage {
       const car = (target as HTMLElement).parentElement?.nextSibling?.firstChild as HTMLElement;
       car.setAttribute('style', 'left: 0px');
       if (car.getAttribute('style') === 'left: 0px') target.classList.add('disabled');
-      if (allStopButtonDisabled()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+      if (allStopButtonDisabled(this.raceModulesSet)) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
       const carVelositySign = document.getElementById(`velosity-${id}`);
       if (carVelositySign) carVelositySign.innerText = 'V = 0 m/c';
     }
@@ -324,7 +325,7 @@ export default class Garage {
         this.garagePrevPageButton.classList.remove('disabled');
       }
     });
-    if (allCarsOfSubPageOnStartPosition()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+    if (allCarsOfSubPageOnStartPosition(this.raceModulesSet)) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
     else this.garageCarManipulator.buttonsBlock.buttonRace.classList.add('disabled');
   };
 
@@ -340,7 +341,7 @@ export default class Garage {
         this.garageNextPageButton.classList.remove('disabled');
       }
     });
-    if (allCarsOfSubPageOnStartPosition()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+    if (allCarsOfSubPageOnStartPosition(this.raceModulesSet)) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
     else this.garageCarManipulator.buttonsBlock.buttonRace.classList.add('disabled');
   };
 
@@ -396,7 +397,7 @@ export default class Garage {
   buttonStartRaceHandler = async (target: HTMLElement): Promise<void> => {
     const makeDisabled = true;
     target.classList.add('disabled');
-    disableToggleStartButtons(makeDisabled);
+    disableToggleStartButtons(makeDisabled, this.raceModulesSet);
     this.garageCarManipulator.buttonsBlock.buttonReset.classList.add('disabled');
     const resultsArr = await this.createArrRaceResult();
     const winnerCompaund = await calculateWinner(resultsArr);
@@ -415,8 +416,8 @@ export default class Garage {
   buttonResetRaceHandler = async (): Promise<void> => {
     const makeDisabled = false;
     this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
-    disableToggleStartButtons(makeDisabled);
-    MoveToStartAllCarsOnSubPage();
+    disableToggleStartButtons(makeDisabled, this.raceModulesSet);
+    MoveToStartAllCarsOnSubPage(this.raceModulesSet);
   };
 
   listenTOGaragePage = async (): Promise<void> => {

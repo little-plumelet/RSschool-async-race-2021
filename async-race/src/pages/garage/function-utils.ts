@@ -1,124 +1,62 @@
 import getCurrerntPageNbr from '../../shared/functions/function-get-current-page-number';
+import RaceModule from './classes/class-race-module';
 
 function getRandomIntInclusive(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min; // Максимум и минимум включаются
 }
 
-function disableToggleStartButtons(makeDisabled: boolean): void {
+function disableToggleStartButtons(makeDisabled: boolean, raceModulesSet: RaceModule[]): void {
   const pageNbr = getCurrerntPageNbr();
-  const participants = document.getElementById(`page-${pageNbr}`)?.childNodes;
-  participants?.forEach((elements) => {
-    if (elements.childNodes.length) {
-      elements.childNodes.forEach((elem) => {
-        if (elem.childNodes.length) {
-          elem.childNodes.forEach((el) => {
-            if (el.childNodes.length) {
-              el.childNodes.forEach((e) => {
-                if (e.nodeName !== '#text') {
-                  if ((e as HTMLElement).classList.contains('move-control-button_start')) {
-                    if (makeDisabled) (e as HTMLElement).classList.add('disabled');
-                    else (e as HTMLElement).classList.remove('disabled');
-                  }
-                }
-              });
-            }
-          });
-        }
-      });
+  const participants = raceModulesSet.filter((element) => element.raceModContainer.parentElement?.getAttribute('id') === `page-${pageNbr}`);
+  participants.forEach((element) => {
+    const buttonStart = element.raceModTrackBlock?.moveController.buttonStart as HTMLElement;
+    if (buttonStart.classList.contains('move-control-button_start')) {
+      if (makeDisabled) buttonStart.classList.add('disabled');
+      else buttonStart.classList.remove('disabled');
     }
   });
 }
 
-function allStopButtonDisabled(): boolean {
+function allStopButtonDisabled(raceModulesSet: RaceModule[]): boolean {
   const pageNbr = getCurrerntPageNbr();
-  const stopButtons = document.getElementById(`page-${pageNbr}`)?.childNodes;
-  const stopButtonsArr = [] as HTMLElement[];
+  const participants = raceModulesSet.filter((element) => element.raceModContainer.parentElement?.getAttribute('id') === `page-${pageNbr}`);
   let count = 0;
 
-  stopButtons?.forEach((elements) => {
-    if (elements.childNodes.length) {
-      elements.childNodes.forEach((elem) => {
-        if (elem.childNodes.length) {
-          elem.childNodes.forEach((el) => {
-            if (el.childNodes.length) {
-              el.childNodes.forEach((e) => {
-                if (e.nodeName !== '#text') {
-                  if ((e as HTMLElement).classList.contains('move-control-button_stop')) {
-                    stopButtonsArr.push(e as HTMLElement);
-                  }
-                }
-              });
-            }
-          });
-        }
-      });
+  participants.forEach((element) => {
+    const buttonStop = element.raceModTrackBlock?.moveController.buttonStop as HTMLElement;
+    if (buttonStop.classList.contains('move-control-button_stop')) {
+      if (buttonStop.classList.contains('disabled')) count += 1;
     }
   });
-  stopButtonsArr.forEach((el) => {
-    if (el.classList.contains('disabled')) count += 1;
-  });
-  if (count === stopButtonsArr.length) return true;
+  if (count === participants.length) return true;
   return false;
 }
 
-function allCarsOfSubPageOnStartPosition(): boolean {
+function allCarsOfSubPageOnStartPosition(raceModulesSet: RaceModule[]): boolean {
   const pageNbr = getCurrerntPageNbr();
-  const stopButtons = document.getElementById(`page-${pageNbr}`)?.childNodes;
-  const carsArr = [] as HTMLElement[];
+  const participants = raceModulesSet.filter((element) => element.raceModContainer.parentElement?.getAttribute('id') === `page-${pageNbr}`);
   let count = 0;
 
-  stopButtons?.forEach((elements) => {
-    if (elements.childNodes.length) {
-      elements.childNodes.forEach((elem) => {
-        if (elem.childNodes.length) {
-          elem.childNodes.forEach((el) => {
-            if (el.childNodes.length) {
-              el.childNodes.forEach((e) => {
-                if (e.nodeName !== '#text') {
-                  if ((e as HTMLElement).classList.contains('car-icon')) {
-                    carsArr.push(e as HTMLElement);
-                  }
-                }
-              });
-            }
-          });
-        }
-      });
+  participants.forEach((element) => {
+    const carIcon = element.raceModTrackBlock?.trackBlock.carIconContainer as HTMLElement;
+    if (carIcon.classList.contains('car-icon')) {
+      if (carIcon.getAttribute('style') === 'left: 0px') count += 1;
     }
   });
-  carsArr.forEach((el) => {
-    if (el.getAttribute('style') === 'left: 0px') count += 1;
-  });
-  if (count === carsArr.length) return true;
+
+  if (count === participants.length) return true;
   return false;
 }
 
-function MoveToStartAllCarsOnSubPage(): void {
+function MoveToStartAllCarsOnSubPage(raceModulesSet: RaceModule[]): void {
   const pageNbr = getCurrerntPageNbr();
-  const stopButtons = document.getElementById(`page-${pageNbr}`)?.childNodes;
-  const carsArr = [] as HTMLElement[];
+  const participants = raceModulesSet.filter((element) => element.raceModContainer.parentElement?.getAttribute('id') === `page-${pageNbr}`);
 
-  stopButtons?.forEach((elements) => {
-    if (elements.childNodes.length) {
-      elements.childNodes.forEach((elem) => {
-        if (elem.childNodes.length) {
-          elem.childNodes.forEach((el) => {
-            if (el.childNodes.length) {
-              el.childNodes.forEach((e) => {
-                if (e.nodeName !== '#text') {
-                  if ((e as HTMLElement).classList.contains('car-icon')) {
-                    carsArr.push(e as HTMLElement);
-                  }
-                }
-              });
-            }
-          });
-        }
-      });
+  participants.forEach((element) => {
+    const carIcon = element.raceModTrackBlock?.trackBlock.carIconContainer as HTMLElement;
+    if (carIcon.classList.contains('car-icon')) {
+      carIcon.setAttribute('style', 'left: 0px');
     }
-  });
-  carsArr.forEach((el) => {
-    el.setAttribute('style', 'left: 0px');
   });
 }
 
