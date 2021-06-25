@@ -25,6 +25,7 @@ import {
   allCarsOfSubPageOnStartPosition,
 } from '../function-utils';
 import ICarAnimationProps from '../interfaces/animtion-params-interface';
+import IstartRaceParams from '../interfaces/start-race-params-interface';
 
 const {
   carsPerPage,
@@ -195,31 +196,27 @@ export default class Garage {
     });
   }
 
-  animationStart = async (
-    id: number, target: HTMLElement, distance: number, velocity: number,
-  ): Promise<IraceResult> => {
+  animationStart = async (startParams: IstartRaceParams): Promise<IraceResult> => {
     const params = {} as ICarAnimationProps;
+    const carIcon = document.getElementById(`car-icon-${startParams.id}`);
 
-    params.id = id;
-    if (target.classList.contains('car-icon')) params.carIcon = target;
-    else params.carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
+    params.id = startParams.id;
+    if (startParams.carIcon.classList.contains('car-icon')) params.carIcon = startParams.carIcon;
+    else if (carIcon) params.carIcon = carIcon;
 
     params.start = Date.now();
     const startPoint = params.carIcon.getBoundingClientRect().left;
     const halfCarIconWidth = params.carIcon.getBoundingClientRect().right - startPoint;
 
     params.endPoint = window.innerWidth - halfCarIconWidth * 1.3 - carFinishOffset;
-    params.carOffset = params.endPoint / ((distance / velocity));
+    params.carOffset = params.endPoint / ((startParams.distance / startParams.velocity));
 
     const animationMod = {
-      carId: -1,
-      AnimationId: -1,
+      carId: startParams.id,
+      AnimationId: window.requestAnimationFrame(carAnimation(params)),
     };
-    animationMod.carId = id;
-    animationMod.AnimationId = window.requestAnimationFrame(
-      carAnimation(params),
-    );
-    const res = await communicator.switchEngineDrive([{ id, status: 'drive' }]);
+
+    const res = await communicator.switchEngineDrive([{ id: animationMod.carId, status: 'drive' }]);
     if (res.success === 'false') {
       animationId.forEach((el) => {
         if (el.carId === res.id) {
@@ -227,8 +224,8 @@ export default class Garage {
         }
       });
     }
-    res.distance = distance;
-    res.velocity = velocity;
+    res.distance = startParams.distance;
+    res.velocity = startParams.velocity;
     return res;
   };
 
@@ -280,14 +277,19 @@ export default class Garage {
   };
 
   buttonStartHandler = async (target: HTMLElement): Promise<void> => {
-    const id = Number((target as HTMLElement).parentElement?.parentElement?.parentElement?.getAttribute('id'));
-    const carRaceparams = await communicator.startORStopCarEngine([{ id, status: 'started' }]);
+    const startParams = {} as IstartRaceParams;
+    startParams.id = Number((target as HTMLElement).parentElement?.parentElement?.parentElement?.getAttribute('id'));
+    const carRaceparams = await communicator.startORStopCarEngine([{ id: startParams.id, status: 'started' }]);
     if (carRaceparams.velocity && carRaceparams.distance) {
       target.classList.add('disabled');
+      const carVelositySign = document.getElementById(`velosity-${startParams.id}`);
+      if (carVelositySign) carVelositySign.innerText = `V = ${carRaceparams.velocity} m/c`;
       this.garageCarManipulator.buttonsBlock.buttonRace.classList.add('disabled');
       target.nextElementSibling?.classList.remove('disabled');
-      this.animationStart(id,
-        target, carRaceparams.distance, carRaceparams.velocity);
+      startParams.velocity = carRaceparams.velocity;
+      startParams.distance = carRaceparams.distance;
+      startParams.carIcon = target;
+      this.animationStart(startParams);
     }
   };
 
@@ -305,6 +307,8 @@ export default class Garage {
       car.setAttribute('style', 'left: 0px');
       if (car.getAttribute('style') === 'left: 0px') target.classList.add('disabled');
       if (allStopButtonDisabled()) this.garageCarManipulator.buttonsBlock.buttonRace.classList.remove('disabled');
+      const carVelositySign = document.getElementById(`velosity-${id}`);
+      if (carVelositySign) carVelositySign.innerText = 'V = 0 m/c';
     }
   };
 
@@ -368,14 +372,18 @@ export default class Garage {
     await Promise.all(cars.map(async (element) => {
       if (element.id) {
         const commonRes = {} as IraceResult;
+        const raseStartParams = {} as IstartRaceParams;
         commonRes.id = element.id;
         const carRaceparams = await communicator.startORStopCarEngine([{ id: element.id, status: 'started' }]);
-        const carIcon = document.getElementById(`${element.id}`)?.lastElementChild?.lastElementChild?.firstElementChild as HTMLElement;
-        (document.getElementById(`${element.id}`)?.lastElementChild?.lastElementChild?.firstElementChild?.nextSibling?.lastChild as HTMLElement).innerText = `V = ${carRaceparams.velocity} m/c`;
+        const carIcon = document.getElementById(`car-icon-${element.id}`);
+        const carVelositySign = document.getElementById(`velosity-${element.id}`);
+        if (carIcon) raseStartParams.carIcon = carIcon;
         if (carRaceparams.velocity && carRaceparams.distance) {
-          raceSuccess = await this.animationStart(
-            element.id, carIcon, carRaceparams.distance, carRaceparams.velocity,
-          );
+          if (carVelositySign) carVelositySign.innerText = `V = ${carRaceparams.velocity} m/c`;
+          raseStartParams.distance = carRaceparams.distance;
+          raseStartParams.velocity = carRaceparams.velocity;
+          raseStartParams.id = element.id;
+          raceSuccess = await this.animationStart(raseStartParams);
           resultsArr.push(raceSuccess);
         }
       }

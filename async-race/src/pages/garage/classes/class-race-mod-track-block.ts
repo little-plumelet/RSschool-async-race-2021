@@ -12,9 +12,9 @@ export default class RaceModTrackBlock {
 
   trackBlockEl: HTMLElement;
 
-  constructor(color: string) {
+  constructor(color: string, id: number) {
     const moveController = new CarMoveController();
-    this.trackBlock = new CarTrack(color);
+    this.trackBlock = new CarTrack(color, id);
 
     this.trackBlockContainer = createDomElement(raceModTrackParams.container);
     this.moveController = moveController.container;
