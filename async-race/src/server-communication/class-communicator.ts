@@ -1,7 +1,6 @@
-import { SUCSESS, SUCSESS201 } from '../shared/constants-server';
+import { SUCSESS, SUCSESS201, URLS } from '../shared/constants-server';
 import { errorHandler, printErrorMessage } from './class-communicator-utils';
 import {
-  IsmallPathes,
   Icar,
   IcarsQueryParams,
   Iwinner,
@@ -13,18 +12,18 @@ import {
 export default class Communicator {
   basePath: string;
 
-  smallPathes: {
-    garage: string,
-    winners: string,
-  };
+  garagePath: string;
+
+  winnersPath: string;
 
   countXCars: number;
 
   countXWinners: number;
 
-  constructor(basePath: string, smallPathes: IsmallPathes) {
-    this.basePath = basePath;
-    this.smallPathes = smallPathes;
+  constructor() {
+    this.basePath = URLS.basePath;
+    this.garagePath = URLS.garagePath;
+    this.winnersPath = URLS.winnersPath;
     this.countXCars = 0;
     this.countXWinners = 0;
   }
@@ -41,7 +40,7 @@ export default class Communicator {
   getCars = async (queryParams: IcarsQueryParams[]): Promise<Icar[]> => {
     let carsList;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.garage}${this.generateCarsQueryString(queryParams)}`);
+      const response = await fetch(`${this.basePath}${this.garagePath}${this.generateCarsQueryString(queryParams)}`);
       errorHandler(response, SUCSESS);
       carsList = await response.json();
       this.countXCars = Number(response.headers.get('X-Total-Count'));
@@ -52,7 +51,7 @@ export default class Communicator {
   getCar = async (id: number): Promise<Icar> => {
     let car;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`);
+      const response = await fetch(`${this.basePath}${this.garagePath}/${id}`);
       errorHandler(response, SUCSESS);
       car = await response.json();
       // Парсим данные, если убедились, что до этого в status было 200, например
@@ -63,7 +62,7 @@ export default class Communicator {
   createCar = async (carParam: Icar): Promise<Icar> => {
     let createdCar;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.garage}`, {
+      const response = await fetch(`${this.basePath}${this.garagePath}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +78,7 @@ export default class Communicator {
   updateCar = async (id: number, carParam: Icar): Promise<Response> => {
     let updatedCar;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
+      const response = await fetch(`${this.basePath}${this.garagePath}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +94,7 @@ export default class Communicator {
   deleteCar = async (id: number): Promise<Icar> => {
     let deletedCar;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.garage}/${id}`, {
+      const response = await fetch(`${this.basePath}${this.garagePath}/${id}`, {
         method: 'DELETE',
       });
       errorHandler(response, SUCSESS);
@@ -123,7 +122,7 @@ export default class Communicator {
   getWinners = async (queryParams: IwinnersQueryParams[]): Promise<Iwinner[]> => {
     let winnersList;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.winners}${this.generateWinnersQueryString(queryParams)}`);
+      const response = await fetch(`${this.basePath}${this.winnersPath}${this.generateWinnersQueryString(queryParams)}`);
       errorHandler(response, SUCSESS);
       winnersList = await response.json();
       this.countXWinners = Number(response.headers.get('X-Total-Count'));
@@ -134,7 +133,7 @@ export default class Communicator {
   getWinner = async (id: number): Promise<Response> => {
     let winner;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`);
+      const response = await fetch(`${this.basePath}${this.winnersPath}/${id}`);
       errorHandler(response, SUCSESS);
       winner = await response.json();
     } catch (error) {
@@ -146,7 +145,7 @@ export default class Communicator {
   createWinner = async (winnerParam: Iwinner): Promise<Response> => {
     let createdWinner;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.winners}`, {
+      const response = await fetch(`${this.basePath}${this.winnersPath}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +161,7 @@ export default class Communicator {
   updateWinner = async (id: number, winnerParam: Iwinner): Promise<Response> => {
     let updatedWinner;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
+      const response = await fetch(`${this.basePath}${this.winnersPath}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +177,7 @@ export default class Communicator {
   deleteWinner = async (id: number): Promise<Response> => {
     let deletedWinner;
     try {
-      const response = await fetch(`${this.basePath}${this.smallPathes.winners}/${id}`, {
+      const response = await fetch(`${this.basePath}${this.winnersPath}/${id}`, {
         method: 'DELETE',
       });
       errorHandler(response, SUCSESS);
