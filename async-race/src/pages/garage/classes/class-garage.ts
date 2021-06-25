@@ -43,13 +43,9 @@ function carAnimation(params: ICarAnimationProps): VoidFunction {
     params.carIcon.setAttribute('style', `left: ${position}px`);
     if (position < params.endPoint) {
       const animationMod = {
-        carId: -1,
-        AnimationId: -1,
+        carId: params.id,
+        AnimationId: window.requestAnimationFrame(carAnimation(params)),
       };
-      animationMod.carId = params.id;
-      animationMod.AnimationId = window.requestAnimationFrame(
-        carAnimation(params),
-      );
       animationId.forEach((el) => {
         if (el.carId === animationMod.carId) {
           const i = animationId.indexOf(el);
