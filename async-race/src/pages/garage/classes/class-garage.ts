@@ -24,6 +24,7 @@ import {
   MoveToStartAllCarsOnSubPage,
   allCarsOfSubPageOnStartPosition,
 } from '../function-utils';
+import ICarAnimationProps from '../interfaces/animtion-params-interface';
 
 const {
   carsPerPage,
@@ -34,22 +35,20 @@ const {
 } = CONSTANTS;
 let animationId = [{} as Ianimation];
 
-function carAnimation(
-  id: number, start: number, carIcon: HTMLElement, carOffset: number, endPoint: number,
-): VoidFunction {
+function carAnimation(params: ICarAnimationProps): VoidFunction {
   return function res(): void {
-    const timePassed = Date.now() - start;
-    const position = timePassed * carOffset;
+    const timePassed = Date.now() - params.start;
+    const position = timePassed * params.carOffset;
     let isPushNeeded = true;
-    carIcon.setAttribute('style', `left: ${position}px`);
-    if (position < endPoint) {
+    params.carIcon.setAttribute('style', `left: ${position}px`);
+    if (position < params.endPoint) {
       const animationMod = {
         carId: -1,
         AnimationId: -1,
       };
-      animationMod.carId = id;
+      animationMod.carId = params.id;
       animationMod.AnimationId = window.requestAnimationFrame(
-        carAnimation(id, start, carIcon, carOffset, endPoint),
+        carAnimation(params),
       );
       animationId.forEach((el) => {
         if (el.carId === animationMod.carId) {
@@ -203,16 +202,18 @@ export default class Garage {
   animationStart = async (
     id: number, target: HTMLElement, distance: number, velocity: number,
   ): Promise<IraceResult> => {
-    let carIcon;
-    if (target.classList.contains('car-icon')) carIcon = target;
-    else carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
+    const params = {} as ICarAnimationProps;
 
-    const start = Date.now();
-    const startPoint = carIcon.getBoundingClientRect().left;
-    const halfCarIconWidth = carIcon.getBoundingClientRect().right - startPoint;
+    params.id = id;
+    if (target.classList.contains('car-icon')) params.carIcon = target;
+    else params.carIcon = target.parentElement?.nextSibling?.firstChild as HTMLElement;
 
-    const endPoint = window.innerWidth - halfCarIconWidth * 1.3 - carFinishOffset;
-    const carOffset = endPoint / ((distance / velocity));
+    params.start = Date.now();
+    const startPoint = params.carIcon.getBoundingClientRect().left;
+    const halfCarIconWidth = params.carIcon.getBoundingClientRect().right - startPoint;
+
+    params.endPoint = window.innerWidth - halfCarIconWidth * 1.3 - carFinishOffset;
+    params.carOffset = params.endPoint / ((distance / velocity));
 
     const animationMod = {
       carId: -1,
@@ -220,7 +221,7 @@ export default class Garage {
     };
     animationMod.carId = id;
     animationMod.AnimationId = window.requestAnimationFrame(
-      carAnimation(id, start, carIcon, carOffset, endPoint),
+      carAnimation(params),
     );
     const res = await communicator.switchEngineDrive([{ id, status: 'drive' }]);
     if (res.success === 'false') {
