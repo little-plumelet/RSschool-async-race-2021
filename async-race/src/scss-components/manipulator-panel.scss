@@ -1,0 +1,21 @@
+.manipulator-container {
+    top: 20px;
+    position: absolute;
+}
+
+.manipulator-input {
+  border: 1px solid $orange_btn;
+  padding: 5px 5px;
+  outline: none;
+  margin: 0 5px;
+}
+
+.manipulator-input_create-car-name,
+.manipulator-input-update-car-name {
+  min-width: 195px;
+}
+
+.block-manipulator-input_create-car-color,
+.block-manipulator-input_update-car-color {
+  padding: 0;
+}

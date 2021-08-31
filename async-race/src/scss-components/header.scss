@@ -1,0 +1,35 @@
+.header {
+    width: 90vw;
+    margin: 0 auto;
+    height: 110px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.navigation-list {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+}
+
+.navigation-list-item {
+    margin-bottom: 10px;
+    list-style-type: none;
+}
+
+.item-ref {
+    text-decoration: none;
+    color: orange;
+    font-size: 18px;
+    border-bottom: 1px solid orange;
+    margin-bottom: 10px;
+}
+
+.item-ref:hover{
+    color: $orange-light_btn;
+}
+@media screen and (min-width: 500px) and (max-width: 960px) {
+    .item-ref {
+        font-size: 16px;   
+    }
+}
